@@ -256,6 +256,14 @@ ORT成瘾风险评分：{ort_score}分（{ort_level}）
                 f"[{c['id']}] {c['diagnosis']} ({c.get('pain_type','')}) → {c['recommended_plan']}"
                 for c in similar_cases
             ])
+            ref_cases_evidence = "\n".join([
+                f"[{c['id']}] {c['diagnosis']} | 循证依据：{c.get('evidence','')}"
+                for c in similar_cases
+            ])
+            ref_cases_risks = "\n".join([
+                f"[{c['id']}] {c['diagnosis']} | 风险提示：{c.get('risk_notes','')}"
+                for c in similar_cases
+            ])
 
             # 显示RAG检索到的参考病例
             if similar_cases:
@@ -295,7 +303,7 @@ ORT成瘾风险评分：{ort_score}分（{ort_level}）
 - 核心结论
 - 推荐强度
 同时标注适用的指南条款（中国/美国）。""",
-                    user_prompt=f"病例：\n{case_summary}",
+                    user_prompt=f"病例：\n{case_summary}\n\n相似病例循证依据参考：\n{ref_cases_evidence}",
                     model="qwen-plus",
                     placeholder=ph2
                 )
@@ -312,7 +320,7 @@ ORT成瘾风险评分：{ort_score}分（{ort_level}）
 3. 中国政策合规提醒（麻醉药品处方规定、知情同意书要求）
 4. 监测建议（随访频率、监测指标）
 用⚠️标注高风险，用✅标注已满足要求。""",
-                    user_prompt=f"病例：\n{case_summary}\nORT评分：{ort_score}（{ort_level}）",
+                    user_prompt=f"病例：\n{case_summary}\nORT评分：{ort_score}（{ort_level}）\n\n相似病例风险提示参考：\n{ref_cases_risks}",
                     model="qwen-plus",
                     placeholder=ph3
                 )
@@ -353,6 +361,18 @@ else:
         st.session_state.evaluation_done = False
         st.session_state.next_case_ready = False
         with st.spinner("正在生成虚拟病例..."):
+            # RAG：从案例库检索与科室/难度匹配的参考案例作为 few-shot
+            train_query = f"{dept_train} {difficulty}"
+            ref_train_cases, _ = retrieve_similar_cases(client, train_query, cases, top_k=2)
+            few_shot_text = ""
+            if ref_train_cases:
+                few_shot_text = "\n\n以下为真实案例特征（仅供风格参考，请生成全新病例，不得直接复制）：\n" + "\n".join([
+                    f"- [{c['id']}] {c['diagnosis']}，{c.get('pain_type','')}，NRS{c.get('pain_score','')}分，"
+                    f"推荐方案：{c.get('recommended_plan','')[:60]}，"
+                    f"风险要点：{c.get('risk_notes','')[:50]}"
+                    for c in ref_train_cases
+                ])
+
             case_text = call_agent(
                 client,
                 system_prompt="""你是医学教育虚拟病例生成Agent。
@@ -370,7 +390,7 @@ else:
 - 临床情境：[1-2句情境说明]
 
 病例必须真实、具有教学价值，含适当的复杂性。""",
-                user_prompt=f"生成{difficulty}难度的{dept_train}场景虚拟病例，用于阿片类药物处方培训。",
+                user_prompt=f"生成{difficulty}难度的{dept_train}场景虚拟病例，用于阿片类药物处方培训。{few_shot_text}",
                 model="qwen-max"
             )
             st.session_state.training_case = case_text
