@@ -1,0 +1,14 @@
+# 密钥文件（绝对不能上传）
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+venv/
+.venv/
+
+# 系统文件
+.DS_Store
+Thumbs.db
