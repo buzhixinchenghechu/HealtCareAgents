@@ -251,7 +251,7 @@ ORT成瘾风险评分：{ort_score}分（{ort_level}）
 """
             # RAG 检索最相关病例
             rag_query = f"{diagnosis} {pain_type} {comorbidities or ''} {department}"
-            similar_cases, rag_ok = retrieve_similar_cases(client, rag_query, cases, top_k=3)
+            similar_cases, rag_ok = retrieve_similar_cases(client, rag_query, cases, top_k=5)
             ref_cases_text = "\n".join([
                 f"[{c['id']}] {c['diagnosis']} ({c.get('pain_type','')}) → {c['recommended_plan']}"
                 for c in similar_cases
@@ -363,7 +363,7 @@ else:
         with st.spinner("正在生成虚拟病例..."):
             # RAG：从案例库检索与科室/难度匹配的参考案例作为 few-shot
             train_query = f"{dept_train} {difficulty}"
-            ref_train_cases, _ = retrieve_similar_cases(client, train_query, cases, top_k=2)
+            ref_train_cases, _ = retrieve_similar_cases(client, train_query, cases, top_k=3)
             few_shot_text = ""
             if ref_train_cases:
                 few_shot_text = "\n\n以下为真实案例特征（仅供风格参考，请生成全新病例，不得直接复制）：\n" + "\n".join([
