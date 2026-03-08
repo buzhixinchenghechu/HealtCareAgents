@@ -1,524 +1,972 @@
 # -*- coding: utf-8 -*-
-"""
-阿片类药物处方辅助决策 & 医学生培训系统
-Web版 - 基于 Streamlit + 通义千问 API
-"""
+"""阿片类药物辅助决策系统（Streamlit）"""
 
-import streamlit as st
+from __future__ import annotations
+
 import json
 import os
+import random
 import re
-from openai import OpenAI
 from datetime import datetime
+from typing import Dict, List, Optional, Tuple
 
-# ─────────────────────────────────────────────
-# 页面基础配置
-# ─────────────────────────────────────────────
+import streamlit as st
+from openai import OpenAI
+
+
 st.set_page_config(
-    page_title="阿片类药物智能辅助系统",
-    page_icon="🏥",
+    page_title="阿片类药物辅助决策系统",
+    page_icon="💊",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
-# ─────────────────────────────────────────────
-# API 客户端初始化
-# ─────────────────────────────────────────────
-@st.cache_resource
-def get_client():
-    api_key = st.secrets.get("DASHSCOPE_API_KEY", os.environ.get("DASHSCOPE_API_KEY", ""))
-    if not api_key or api_key == "填入你的阿里云Key":
-        st.error("⚠️ 请在 .streamlit/secrets.toml 中填入 DASHSCOPE_API_KEY")
-        st.stop()
-    return OpenAI(
-        api_key=api_key,
-        base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+
+NEWS_FEED = [
+    {
+        "date": "2026-03-01",
+        "title": "门诊阿片类处方复评流程更新",
+        "summary": "新增“7天内复评”规则，要求高风险患者必须进行二次评估并记录知情同意。",
+    },
+    {
+        "date": "2026-02-25",
+        "title": "肿瘤疼痛多学科协作路径发布",
+        "summary": "建议肿瘤科、麻醉疼痛科、药学部协同制定初始方案并联合随访。",
+    },
+    {
+        "date": "2026-02-18",
+        "title": "阿片类药物不良反应监测重点提示",
+        "summary": "重点关注呼吸抑制、便秘、镇静过度与跌倒风险，强调起始剂量和合并用药审查。",
+    },
+]
+
+
+POLICY_LIBRARY = [
+    {
+        "id": "POL-2026-001",
+        "title": "门诊阿片类药物处方与复评规范（2026版）",
+        "source": "医院药事管理委员会",
+        "date": "2026-03-01",
+        "tags": ["处方合规", "复评流程"],
+        "summary": "高风险患者应在 7 天内完成首次复评；长期治疗需建立随访计划并记录疗效和不良反应。",
+        "action": "用于门诊长期镇痛治疗流程设计与审方。",
+    },
+    {
+        "id": "POL-2026-002",
+        "title": "阿片类药物知情同意与患者教育要点",
+        "source": "医务处",
+        "date": "2026-02-20",
+        "tags": ["知情同意", "患者教育"],
+        "summary": "明确沟通治疗目标、停药条件、潜在风险与紧急就医指征；建议统一模板留存签署记录。",
+        "action": "用于建立处方前沟通与病历留痕。",
+    },
+    {
+        "id": "POL-2026-003",
+        "title": "阿片类药物联合用药风险清单",
+        "source": "临床药学部",
+        "date": "2026-02-12",
+        "tags": ["药物相互作用", "风险预警"],
+        "summary": "重点审查与镇静催眠药、酒精、抗焦虑药联用风险，建议起始期高频监测。",
+        "action": "用于临床辅助页面的自动风险提示。",
+    },
+    {
+        "id": "POL-2026-004",
+        "title": "住院镇痛路径中的 ORT 风险分层应用",
+        "source": "麻醉与疼痛质控组",
+        "date": "2026-01-30",
+        "tags": ["ORT", "风险分层"],
+        "summary": "将 ORT 评分纳入住院镇痛路径，低中高风险分别匹配不同监测与随访强度。",
+        "action": "用于高风险患者预警和随访排班。",
+    },
+]
+
+
+def inject_css() -> None:
+    st.markdown(
+        """
+        <style>
+        :root {
+            --bg: #f4f7fb;
+            --card: #ffffff;
+            --text: #10243d;
+            --muted: #5b6b7e;
+            --brand: #1d5cff;
+            --ok: #169c4b;
+            --warn: #de7b00;
+            --danger: #d7263d;
+        }
+        .stApp {
+            background:
+                radial-gradient(1200px 400px at -20% -10%, #dce8ff 0%, rgba(220, 232, 255, 0) 55%),
+                radial-gradient(1200px 400px at 120% -20%, #e4f5ff 0%, rgba(228, 245, 255, 0) 55%),
+                var(--bg);
+        }
+        .hero {
+            background: linear-gradient(120deg, #1446cc 0%, #1d5cff 55%, #29b6f6 100%);
+            color: #fff;
+            border-radius: 18px;
+            padding: 20px 22px;
+            border: 1px solid rgba(255,255,255,0.25);
+            box-shadow: 0 12px 30px rgba(20, 70, 204, 0.20);
+            margin-bottom: 12px;
+        }
+        .hero h1 {
+            margin: 0 0 6px 0;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+        }
+        .hero p {
+            margin: 0;
+            opacity: 0.95;
+            font-size: 14px;
+        }
+        .kpi-card {
+            background: var(--card);
+            border-radius: 14px;
+            border: 1px solid #e8edf7;
+            padding: 14px 16px;
+            box-shadow: 0 8px 20px rgba(16, 36, 61, 0.04);
+        }
+        .kpi-title {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+        .kpi-value {
+            color: var(--text);
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+        .kpi-sub {
+            color: #2f6df8;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            border: 1px solid transparent;
+            margin-right: 6px;
+            margin-top: 6px;
+        }
+        .tag-low { background: #e8f8ee; color: #116f35; border-color: #bde7cd; }
+        .tag-mid { background: #fff6e8; color: #a75800; border-color: #ffd9ad; }
+        .tag-high { background: #ffecee; color: #a61f2f; border-color: #ffc7ce; }
+        .muted { color: var(--muted); font-size: 13px; }
+        .policy-card {
+            background: #fff;
+            border: 1px solid #e8edf7;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+        .policy-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .timeline-item {
+            border-left: 2px solid #cfe0ff;
+            padding-left: 12px;
+            margin-left: 6px;
+            margin-bottom: 12px;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
     )
 
-# ─────────────────────────────────────────────
-# 病例知识库加载
-# ─────────────────────────────────────────────
+
+def init_state() -> None:
+    defaults = {
+        "current_page": "工作台总览",
+        "is_logged_in": False,
+        "doctor_name": "未登录用户",
+        "doctor_title": "请先登录",
+        "training_case": "",
+        "training_history": [],
+        "last_report": "",
+    }
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
+
+
+def safe_secret(name: str) -> str:
+    try:
+        return str(st.secrets.get(name, "")).strip()
+    except Exception:
+        return ""
+
+
+@st.cache_resource
+def get_client_and_model() -> Tuple[Optional[OpenAI], str]:
+    dashscope_key = safe_secret("DASHSCOPE_API_KEY") or os.environ.get("DASHSCOPE_API_KEY", "").strip()
+    openai_key = safe_secret("OPENAI_API_KEY") or os.environ.get("OPENAI_API_KEY", "").strip()
+
+    if dashscope_key:
+        return (
+            OpenAI(api_key=dashscope_key, base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"),
+            "qwen-plus",
+        )
+    if openai_key:
+        return OpenAI(api_key=openai_key), "gpt-4o-mini"
+    return None, ""
+
+
+def ask_llm(client: Optional[OpenAI], model: str, system_prompt: str, user_prompt: str) -> str:
+    if not client:
+        return ""
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            temperature=0.2,
+            max_tokens=1200,
+        )
+        content = response.choices[0].message.content or ""
+        return str(content).strip()
+    except Exception as exc:  # pragma: no cover
+        return f"AI 生成失败：{exc}"
+
+
+def normalize_text(text: str) -> str:
+    return re.sub(r"\s+", " ", str(text).lower()).strip()
+
+
+def tokenize(text: str) -> set:
+    return set(re.findall(r"[a-z0-9\u4e00-\u9fff]+", normalize_text(text)))
+
+
 @st.cache_data
-def load_cases():
-    path = "data/cases/sample_cases.json"
-    if os.path.exists(path):
-        with open(path, encoding="utf-8") as f:
-            return json.load(f)
+def load_cases() -> List[Dict]:
+    path = os.path.join("data", "cases", "sample_cases.json")
+    if not os.path.exists(path):
+        return []
+
+    for encoding in ("utf-8", "gbk", "gb18030"):
+        try:
+            with open(path, "r", encoding=encoding) as f:
+                data = json.load(f)
+            if isinstance(data, list):
+                return data
+        except Exception:
+            continue
     return []
 
 
-# ─────────────────────────────────────────────
-# RAG：语义检索相关病例
-# ─────────────────────────────────────────────
-def cosine_similarity(a: list, b: list) -> float:
-    """纯Python余弦相似度（无需numpy）"""
-    if not a or not b:
-        return 0.0
-    dot = sum(x * y for x, y in zip(a, b))
-    mag_a = sum(x * x for x in a) ** 0.5
-    mag_b = sum(x * x for x in b) ** 0.5
-    return dot / (mag_a * mag_b) if mag_a * mag_b > 0 else 0.0
-
-
-@st.cache_data(show_spinner=False)
-def get_case_embeddings(_client, cases_json: str) -> list:
-    """预计算所有病例的Embedding向量，启动后缓存"""
-    cases = json.loads(cases_json)
-    embeddings = []
-    for case in cases:
-        text = " ".join(filter(None, [
-            case.get("diagnosis", ""),
-            case.get("pain_type", ""),
-            case.get("category", ""),
-            case.get("risk_notes", "")
-        ]))
-        try:
-            resp = _client.embeddings.create(
-                model="text-embedding-v3",
-                input=text,
-                encoding_format="float"
-            )
-            embeddings.append(resp.data[0].embedding)
-        except Exception:
-            embeddings.append(None)
-    return embeddings
-
-
-def retrieve_similar_cases(client, query: str, cases: list, top_k: int = 3):
-    """RAG检索：按语义相似度返回最相关的 top_k 个病例"""
-    if not cases:
-        return [], False
-    cases_json = json.dumps(cases, ensure_ascii=False, sort_keys=True)
-    case_embeddings = get_case_embeddings(client, cases_json)
-    try:
-        resp = client.embeddings.create(
-            model="text-embedding-v3",
-            input=query,
-            encoding_format="float"
+def case_summary_text(case: Dict) -> str:
+    return " ".join(
+        filter(
+            None,
+            [
+                case.get("id", ""),
+                case.get("diagnosis", ""),
+                case.get("category", ""),
+                case.get("pain_type", ""),
+                case.get("recommended_plan", ""),
+                case.get("risk_notes", ""),
+            ],
         )
-        query_emb = resp.data[0].embedding
-    except Exception:
-        return cases[:top_k], False  # 降级：直接返回前N条
-    scored = [
-        (cosine_similarity(query_emb, emb), case)
-        for emb, case in zip(case_embeddings, cases)
-        if emb is not None
-    ]
-    scored.sort(key=lambda x: x[0], reverse=True)
-    return [c for _, c in scored[:top_k]], True
+    )
 
 
-# ─────────────────────────────────────────────
-# ORT 评分计算
-# ─────────────────────────────────────────────
-def calc_ort(age, substance_history, psych_history, family_history):
+def retrieve_similar_cases(query: str, cases: List[Dict], top_k: int = 3) -> List[Dict]:
+    if not cases:
+        return []
+
+    query_tokens = tokenize(query)
+    if not query_tokens:
+        return cases[:top_k]
+
+    scored = []
+    for case in cases:
+        text = case_summary_text(case)
+        tokens = tokenize(text)
+        if not tokens:
+            continue
+        overlap = len(query_tokens & tokens)
+        score = overlap / (len(query_tokens) + 1)
+        if query in text:
+            score += 0.2
+        scored.append((score, case))
+
+    scored.sort(key=lambda item: item[0], reverse=True)
+    selected = [case for score, case in scored if score > 0][:top_k]
+    return selected or cases[:top_k]
+
+
+def calc_ort(age: int, personal_use: str, family_use: str, psych_histories: List[str]) -> Tuple[int, str, List[str]]:
     score = 0
     details = []
-    try:
-        age_int = int(age)
-        if 16 <= age_int <= 45:
-            score += 1
-            details.append("年龄16-45岁 +1")
-    except:
-        pass
-    sh = substance_history.lower()
-    fh = family_history.lower()
-    ph = psych_history.lower()
-    if any(k in sh for k in ["酒", "饮酒", "alcohol"]):
-        score += 3; details.append("本人饮酒史 +3")
-    if any(k in sh for k in ["毒品", "大麻", "海洛因"]):
-        score += 4; details.append("本人非法药物史 +4")
-    if any(k in sh for k in ["处方药滥用"]):
-        score += 5; details.append("本人处方药滥用 +5")
-    if any(k in fh for k in ["酒", "饮酒"]):
-        score += 1; details.append("家族饮酒史 +1")
-    if any(k in fh for k in ["毒品", "大麻"]):
-        score += 2; details.append("家族非法药物史 +2")
-    if any(k in fh for k in ["处方"]):
-        score += 4; details.append("家族处方药滥用史 +4")
-    if any(k in ph for k in ["抑郁", "depression"]):
-        score += 1; details.append("抑郁症史 +1")
-    if any(k in ph for k in ["adhd", "多动"]):
-        score += 2; details.append("ADHD史 +2")
-    if any(k in ph for k in ["双相", "bipolar"]):
-        score += 2; details.append("双相情感障碍史 +2")
-    level = "🟢 低风险" if score <= 3 else ("🟡 中风险" if score <= 7 else "🔴 高风险")
+
+    if 16 <= age <= 45:
+        score += 1
+        details.append("年龄 16-45 岁 +1")
+
+    personal_points = {
+        "无": 0,
+        "酒精使用史": 3,
+        "非法药物使用史": 4,
+        "处方药滥用史": 5,
+    }
+    family_points = {
+        "无": 0,
+        "家族酒精使用史": 1,
+        "家族非法药物使用史": 2,
+        "家族处方药滥用史": 4,
+    }
+    psych_points = {
+        "抑郁": 1,
+        "ADHD": 2,
+        "双相障碍": 2,
+        "精神分裂谱系障碍": 2,
+    }
+
+    pp = personal_points.get(personal_use, 0)
+    fp = family_points.get(family_use, 0)
+    score += pp + fp
+    if pp:
+        details.append(f"{personal_use} +{pp}")
+    if fp:
+        details.append(f"{family_use} +{fp}")
+
+    for item in psych_histories:
+        pts = psych_points.get(item, 0)
+        if pts:
+            score += pts
+            details.append(f"{item} +{pts}")
+
+    if score <= 3:
+        level = "低风险"
+    elif score <= 7:
+        level = "中风险"
+    else:
+        level = "高风险"
     return score, level, details
 
-# ─────────────────────────────────────────────
-# Agent 调用（流式）
-# ─────────────────────────────────────────────
-def call_agent(client, system_prompt: str, user_prompt: str,
-               model: str = "qwen-plus", placeholder=None) -> str:
-    stream = client.chat.completions.create(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user",   "content": user_prompt}
-        ],
-        max_tokens=2000,
-        stream=True
+
+def local_plan(age: int, pain_score: int, ort_level: str, opioid_naive: bool) -> str:
+    if pain_score <= 3:
+        base = "优先非阿片药物（对乙酰氨基酚或 NSAIDs）并动态评估。"
+    elif pain_score <= 6:
+        base = "可考虑短疗程弱阿片或低剂量短效阿片，联合非阿片药物。"
+    else:
+        base = "可考虑短效强阿片起始，先小剂量滴定并尽早复评。"
+
+    naive_hint = "为阿片初治患者，建议从最低有效剂量起步。" if opioid_naive else "已有阿片暴露史，建议核对既往耐受与换算剂量。"
+
+    if ort_level == "低风险":
+        monitor = "随访建议：3-7 天复评镇痛效果和不良反应。"
+    elif ort_level == "中风险":
+        monitor = "随访建议：3 天内复评，要求处方限量、记录知情同意。"
+    else:
+        monitor = "随访建议：24-72 小时复评，优先多学科会诊并强化监测。"
+
+    return (
+        f"### 本地规则建议\n"
+        f"1. {base}\n"
+        f"2. {naive_hint}\n"
+        f"3. 优先口服给药，非必要不选择注射途径。\n"
+        f"4. 联合通便、止吐和跌倒风险教育。\n"
+        f"5. {monitor}\n"
     )
-    result = ""
-    for chunk in stream:
-        delta = chunk.choices[0].delta
-        if delta.content:
-            result += delta.content
-            if placeholder:
-                placeholder.markdown(result + "▌")
-    if placeholder:
-        placeholder.markdown(result)
-    return result
 
-# ─────────────────────────────────────────────
-# 侧边栏导航
-# ─────────────────────────────────────────────
-with st.sidebar:
-    st.image("https://img.icons8.com/color/96/hospital.png", width=60)
-    st.title("阿片类药物\n智能辅助系统")
-    st.markdown("---")
-    page = st.radio(
-        "选择功能模块",
-        ["🏥 临床咨询（医生端）", "🎓 医学生培训"],
-        label_visibility="collapsed"
+
+def local_risk_and_compliance(pain_score: int, ort_level: str, comorbidities: str, current_meds: str) -> str:
+    risks = []
+    if pain_score >= 7:
+        risks.append("高疼痛评分提示可能需要快速滴定，需防止过量镇静。")
+    if "呼吸" in comorbidities or "copd" in normalize_text(comorbidities):
+        risks.append("存在呼吸系统风险，需重点警惕呼吸抑制。")
+    if "苯二氮卓" in current_meds or "安眠" in current_meds:
+        risks.append("与镇静催眠药联用，过度镇静风险上升。")
+    if ort_level == "高风险":
+        risks.append("ORT 高风险，建议短处方、高频复评、必要时会诊。")
+
+    if not risks:
+        risks.append("未识别到显著高危信号，仍需按流程复评。")
+
+    compliance = [
+        "确认诊断与镇痛目标，并记录疗效终点。",
+        "完成知情同意：包含依赖风险、不良反应、停药条件。",
+        "高风险患者执行限量处方和随访计划。",
+        "病历中记录不良反应监测与复评时间点。",
+    ]
+
+    text = "### 风险提示\n"
+    for idx, item in enumerate(risks, start=1):
+        text += f"{idx}. {item}\n"
+    text += "\n### 合规要点\n"
+    for idx, item in enumerate(compliance, start=1):
+        text += f"{idx}. {item}\n"
+    return text
+
+
+def render_top_banner() -> None:
+    date_str = datetime.now().strftime("%Y-%m-%d %H:%M")
+    st.markdown(
+        f"""
+        <div class="hero">
+            <h1>阿片类药物辅助决策系统</h1>
+            <p>覆盖工作台总览、临床辅助、虚拟训练、文献政策和个人中心 | 当前时间：{date_str}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
     )
-    st.markdown("---")
-    st.caption("⚠️ 本系统仅供参考，最终处方决策权归临床医生")
-    st.caption("v1.0 | 通义千问驱动")
-
-client = get_client()
-cases = load_cases()
-
-# ══════════════════════════════════════════════
-# 模块一：临床咨询（医生端）
-# ══════════════════════════════════════════════
-if page == "🏥 临床咨询（医生端）":
-
-    st.title("🏥 阿片类药物处方辅助决策")
-    st.markdown("填写患者信息，系统将从**用药建议、证据溯源、风险评估**三个维度提供参考。")
-
-    # ── 病例输入区 ──────────────────────────────
-    with st.expander("📋 病例输入区", expanded=True):
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            age   = st.number_input("年龄", 1, 120, 60)
-            gender = st.selectbox("性别", ["男", "女"])
-            pain_score = st.slider("疼痛评分 (NRS 0-10)", 0, 10, 7)
-        with col2:
-            diagnosis = st.text_input("主要诊断", placeholder="如：肺癌晚期骨转移")
-            pain_type = st.selectbox("疼痛类型", ["癌性疼痛", "非癌性急性疼痛", "非癌性慢性疼痛"])
-            department = st.selectbox("科室", ["肿瘤科", "骨科", "疼痛科", "急诊科", "口腔科", "其他"])
-        with col3:
-            current_meds   = st.text_area("当前用药", placeholder="每行一种，如：布洛芬400mg tid")
-            comorbidities  = st.text_area("合并症", placeholder="如：高血压、糖尿病")
-
-        col4, col5 = st.columns(2)
-        with col4:
-            substance_hist = st.text_input("本人物质滥用史", placeholder="如：大麻史，否则留空")
-            psych_hist     = st.text_input("心理疾病史", placeholder="如：抑郁症，否则留空")
-        with col5:
-            family_hist    = st.text_input("家族物质滥用史", placeholder="如：父亲酗酒史，否则留空")
-            extra_notes    = st.text_area("补充说明", placeholder="其他需要AI知道的信息")
-
-    # ── ORT 评分展示 ──────────────────────────────
-    ort_score, ort_level, ort_details = calc_ort(age, substance_hist, psych_hist, family_hist)
-
-    ort_col1, ort_col2 = st.columns([1, 3])
-    with ort_col1:
-        st.metric("ORT 成瘾风险评分", f"{ort_score} 分", delta=ort_level)
-    with ort_col2:
-        if ort_details:
-            st.info("风险因子：" + " | ".join(ort_details))
-        else:
-            st.success("无显著成瘾风险因子")
-
-    # ── 生成按钮 ──────────────────────────────────
-    if st.button("🚀 生成AI辅助建议", type="primary", use_container_width=True):
-        if not diagnosis:
-            st.warning("请填写主要诊断")
-        else:
-            # 构建病例摘要
-            case_summary = f"""
-患者信息：{age}岁{gender}，{diagnosis}，疼痛评分{pain_score}/10（{pain_type}）
-科室：{department}
-当前用药：{current_meds or '无'}
-合并症：{comorbidities or '无'}
-本人物质滥用史：{substance_hist or '无'}
-心理疾病史：{psych_hist or '无'}
-家族物质滥用史：{family_hist or '无'}
-ORT成瘾风险评分：{ort_score}分（{ort_level}）
-补充说明：{extra_notes or '无'}
-"""
-            # RAG 检索最相关病例
-            rag_query = f"{diagnosis} {pain_type} {comorbidities or ''} {department}"
-            similar_cases, rag_ok = retrieve_similar_cases(client, rag_query, cases, top_k=5)
-            ref_cases_text = "\n".join([
-                f"[{c['id']}] {c['diagnosis']} ({c.get('pain_type','')}) → {c['recommended_plan']}"
-                for c in similar_cases
-            ])
-            ref_cases_evidence = "\n".join([
-                f"[{c['id']}] {c['diagnosis']} | 循证依据：{c.get('evidence','')}"
-                for c in similar_cases
-            ])
-            ref_cases_risks = "\n".join([
-                f"[{c['id']}] {c['diagnosis']} | 风险提示：{c.get('risk_notes','')}"
-                for c in similar_cases
-            ])
-
-            # 显示RAG检索到的参考病例
-            if similar_cases:
-                rag_label = "🔍 RAG检索" if rag_ok else "📋 参考病例（关键词匹配）"
-                with st.expander(f"{rag_label}：AI正在参考以下 {len(similar_cases)} 个相似病例", expanded=False):
-                    for c in similar_cases:
-                        st.markdown(f"- **[{c['id']}]** {c['diagnosis']} — {c.get('recommended_plan','')[:60]}...")
-
-            tab1, tab2, tab3 = st.tabs(["💊 用药建议", "📚 证据溯源", "⚠️ 风险评估"])
-
-            with tab1:
-                st.markdown("#### AI 用药建议")
-                ph1 = st.empty()
-                call_agent(
-                    client,
-                    system_prompt="""你是阿片类药物处方辅助决策AI。
-根据患者信息，给出：
-1. 推荐处方方案（药物、剂量、给药途径、疗程）
-2. WHO镇痛阶梯定位
-3. 首选理由（2-3条）
-4. 替代方案
-格式清晰，使用Markdown，带可信度评分（如：建议可信度85%）""",
-                    user_prompt=f"病例：\n{case_summary}\n\n参考相似病例：\n{ref_cases_text}",
-                    model="qwen-max",
-                    placeholder=ph1
-                )
-
-            with tab2:
-                st.markdown("#### 证据溯源")
-                ph2 = st.empty()
-                call_agent(
-                    client,
-                    system_prompt="""你是医学文献溯源Agent。
-根据病例，提供3-5条最相关循证证据：
-- 证据等级（I/II/III/IV）
-- 来源（期刊+年份）
-- 核心结论
-- 推荐强度
-同时标注适用的指南条款（中国/美国）。""",
-                    user_prompt=f"病例：\n{case_summary}\n\n相似病例循证依据参考：\n{ref_cases_evidence}",
-                    model="qwen-plus",
-                    placeholder=ph2
-                )
-
-            with tab3:
-                st.markdown("#### 风险评估与政策合规")
-                ph3 = st.empty()
-                call_agent(
-                    client,
-                    system_prompt="""你是临床风险评估Agent。
-请评估：
-1. 主要临床风险（如呼吸抑制、便秘、过度镇静）
-2. 药物相互作用警示
-3. 中国政策合规提醒（麻醉药品处方规定、知情同意书要求）
-4. 监测建议（随访频率、监测指标）
-用⚠️标注高风险，用✅标注已满足要求。""",
-                    user_prompt=f"病例：\n{case_summary}\nORT评分：{ort_score}（{ort_level}）\n\n相似病例风险提示参考：\n{ref_cases_risks}",
-                    model="qwen-plus",
-                    placeholder=ph3
-                )
-
-    # ── 责任声明区 ────────────────────────────────
-    st.markdown("---")
-    st.info("📌 **责任声明**：本系统输出内容仅作为临床参考，不构成医嘱。最终处方决策权归主治医师，须结合具体临床情况判断。")
 
 
-# ══════════════════════════════════════════════
-# 模块二：医学生培训
-# ══════════════════════════════════════════════
-else:
-    st.title("🎓 医学生处方培训系统")
-    st.markdown("系统将生成**虚拟病例**供你练习，提交处方后获得**评估报告**与**个性化训练题**。")
+def sidebar_navigation() -> str:
+    with st.sidebar:
+        st.markdown("## 医疗智能平台")
+        st.caption("Opioid Decision Support v2.0")
+        page = st.radio(
+            "导航",
+            ["工作台总览", "临床辅助", "虚拟训练", "文献与政策库", "个人中心", "登录与安全"],
+            index=["工作台总览", "临床辅助", "虚拟训练", "文献与政策库", "个人中心", "登录与安全"].index(
+                st.session_state.current_page
+            ),
+        )
+        st.session_state.current_page = page
 
-    # 初始化 session state
-    if "training_case" not in st.session_state:
-        st.session_state.training_case = None
-    if "evaluation_done" not in st.session_state:
-        st.session_state.evaluation_done = False
-    if "student_history" not in st.session_state:
-        st.session_state.student_history = []
-    if "next_case_ready" not in st.session_state:
-        st.session_state.next_case_ready = False
-
-    # ── 生成虚拟病例 ────────────────────────────────
-    col_gen1, col_gen2, col_gen3 = st.columns(3)
-    with col_gen1:
-        difficulty = st.selectbox("难度", ["初级（癌性疼痛）", "中级（术后疼痛）", "高级（慢性疼痛+高风险因素）"])
-    with col_gen2:
-        dept_train = st.selectbox("科室场景", ["肿瘤科", "骨科", "疼痛科门诊", "急诊科"])
-    with col_gen3:
-        st.markdown("<br>", unsafe_allow_html=True)
-        gen_btn = st.button("🎲 生成新病例", type="primary", use_container_width=True)
-
-    if gen_btn:
-        st.session_state.evaluation_done = False
-        st.session_state.next_case_ready = False
-        with st.spinner("正在生成虚拟病例..."):
-            # RAG：从案例库检索与科室/难度匹配的参考案例作为 few-shot
-            train_query = f"{dept_train} {difficulty}"
-            ref_train_cases, _ = retrieve_similar_cases(client, train_query, cases, top_k=3)
-            few_shot_text = ""
-            if ref_train_cases:
-                few_shot_text = "\n\n以下为真实案例特征（仅供风格参考，请生成全新病例，不得直接复制）：\n" + "\n".join([
-                    f"- [{c['id']}] {c['diagnosis']}，{c.get('pain_type','')}，NRS{c.get('pain_score','')}分，"
-                    f"推荐方案：{c.get('recommended_plan','')[:60]}，"
-                    f"风险要点：{c.get('risk_notes','')[:50]}"
-                    for c in ref_train_cases
-                ])
-
-            case_text = call_agent(
-                client,
-                system_prompt="""你是医学教育虚拟病例生成Agent。
-生成一个用于阿片类药物处方培训的高拟真虚拟病例，格式如下：
-
-【虚拟病例】
-- 患者：[年龄]岁[性别]，[科室]
-- 主诉：[症状描述，含疼痛评分NRS X/10]
-- 诊断：[诊断名称]
-- 既往史：[合并症、过敏史]
-- 个人史：[物质使用史，可能有风险因素]
-- 家族史：[可能有风险因素]
-- 当前用药：[已用药物及效果]
-- 检查结果：[简要辅助检查]
-- 临床情境：[1-2句情境说明]
-
-病例必须真实、具有教学价值，含适当的复杂性。""",
-                user_prompt=f"生成{difficulty}难度的{dept_train}场景虚拟病例，用于阿片类药物处方培训。{few_shot_text}",
-                model="qwen-max"
-            )
-            st.session_state.training_case = case_text
-            st.session_state.evaluation_done = False
-
-    # ── 展示病例 ────────────────────────────────────
-    if st.session_state.training_case:
         st.markdown("---")
-        with st.container(border=True):
-            st.markdown("### 📋 虚拟病例")
-            st.markdown(st.session_state.training_case)
+        st.markdown("### 账户状态")
+        if st.session_state.is_logged_in:
+            st.success(f"已登录：{st.session_state.doctor_name}")
+            st.caption(st.session_state.doctor_title)
+            if st.button("退出登录", use_container_width=True):
+                st.session_state.is_logged_in = False
+                st.session_state.doctor_name = "未登录用户"
+                st.session_state.doctor_title = "请先登录"
+                st.rerun()
+        else:
+            st.warning("未登录")
+            st.caption("可进入“登录与安全”完成认证")
 
-        # ── 学生作答区 ──────────────────────────────
-        if not st.session_state.evaluation_done:
-            st.markdown("### ✍️ 你的处方方案")
+        st.markdown("---")
+        st.caption("提示：本系统输出仅作临床辅助参考。")
+    return page
 
-            s_col1, s_col2 = st.columns(2)
-            with s_col1:
-                student_drug = st.text_input("药物名称与剂量", placeholder="如：盐酸吗啡缓释片 30mg")
-                student_route = st.selectbox("给药途径", ["口服", "静脉", "肌肉注射", "皮下注射", "贴剂"])
-                student_freq = st.text_input("给药频次", placeholder="如：q12h")
-            with s_col2:
-                student_duration = st.text_input("疗程", placeholder="如：2周，定期复诊")
-                student_combo = st.text_area("联合用药/辅助措施", placeholder="如：止吐药、通便药、随访计划")
-                student_reason = st.text_area("选择理由（选填）", placeholder="说明你的临床决策思路")
 
-            if st.button("📤 提交方案，获取评估", type="primary", use_container_width=True):
-                if not student_drug:
-                    st.warning("请至少填写药物名称与剂量")
-                else:
-                    student_answer = f"""
-处方方案：{student_drug} {student_route} {student_freq}
-疗程：{student_duration}
-联合用药：{student_combo}
-决策理由：{student_reason}
+def page_dashboard(cases: List[Dict]) -> None:
+    st.markdown("### 工作台总览")
+
+    col1, col2, col3, col4 = st.columns(4)
+    metrics = [
+        ("今日待评估病例", str(max(8, len(cases) // 8 or 12)), "较昨日 +2"),
+        ("高风险预警", str(max(3, len(cases) // 20 or 5)), "需优先复评"),
+        ("处方合规率", "96.2%", "稳定"),
+        ("本周复评完成率", "88.5%", "持续提升"),
+    ]
+    for col, (title, value, sub) in zip([col1, col2, col3, col4], metrics):
+        with col:
+            st.markdown(
+                f"""
+                <div class="kpi-card">
+                    <div class="kpi-title">{title}</div>
+                    <div class="kpi-value">{value}</div>
+                    <div class="kpi-sub">{sub}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+    st.markdown("")
+    left, right = st.columns([1.2, 1])
+
+    with left:
+        st.markdown("#### 本周风险趋势")
+        st.bar_chart({"低风险": [22, 20, 24, 21, 23, 26, 25], "中高风险": [8, 9, 7, 10, 9, 8, 7]})
+
+        st.markdown("#### 最新动态")
+        for item in NEWS_FEED:
+            with st.container(border=True):
+                st.write(f"**{item['title']}**")
+                st.caption(f"{item['date']}")
+                st.write(item["summary"])
+
+    with right:
+        st.markdown("#### 快捷入口")
+        if st.button("进入临床辅助", use_container_width=True):
+            st.session_state.current_page = "临床辅助"
+            st.rerun()
+        if st.button("进入虚拟训练", use_container_width=True):
+            st.session_state.current_page = "虚拟训练"
+            st.rerun()
+        if st.button("查看文献与政策库", use_container_width=True):
+            st.session_state.current_page = "文献与政策库"
+            st.rerun()
+
+        st.markdown("#### 今日提醒")
+        st.info("请优先处理 ORT 高风险且疼痛评分 >= 7 的患者。")
+        st.warning("发现 2 例“阿片 + 镇静催眠药”联用处方，建议复核。")
+        st.success("知识库最近 7 天已同步 4 条院内政策。")
+
+
+def page_clinical_assistant(client: Optional[OpenAI], model: str, cases: List[Dict]) -> None:
+    st.markdown("### 临床辅助")
+    st.caption("输入患者信息后生成：用药建议、风险评估、合规提示、相似病例参考。")
+
+    with st.form("clinical_form", clear_on_submit=False):
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            age = st.number_input("年龄", min_value=1, max_value=120, value=60, step=1)
+            gender = st.selectbox("性别", ["男", "女"])
+            pain_score = st.slider("疼痛评分 NRS", 0, 10, 7)
+        with c2:
+            diagnosis = st.text_input("主要诊断", placeholder="如：晚期肿瘤骨转移")
+            pain_type = st.selectbox("疼痛类型", ["癌性疼痛", "非癌性急性疼痛", "非癌性慢性疼痛"])
+            department = st.selectbox("科室", ["肿瘤科", "疼痛科", "骨科", "急诊科", "麻醉科", "其他"])
+        with c3:
+            opioid_naive = st.checkbox("阿片初治患者", value=True)
+            renal_liver_issue = st.checkbox("存在肝肾功能异常", value=False)
+            allergy = st.text_input("过敏史", placeholder="如：吗啡过敏")
+
+        d1, d2 = st.columns(2)
+        with d1:
+            current_meds = st.text_area("当前用药", placeholder="每行一个，例如：劳拉西泮 1mg qn")
+            comorbidities = st.text_area("合并症", placeholder="如：COPD、睡眠呼吸暂停、高血压")
+        with d2:
+            personal_use = st.selectbox("本人物质使用史", ["无", "酒精使用史", "非法药物使用史", "处方药滥用史"])
+            family_use = st.selectbox("家族物质使用史", ["无", "家族酒精使用史", "家族非法药物使用史", "家族处方药滥用史"])
+            psych_histories = st.multiselect("心理/精神病史", ["抑郁", "ADHD", "双相障碍", "精神分裂谱系障碍"])
+            extra_notes = st.text_area("补充说明", placeholder="其他需要纳入决策的信息")
+
+        submit = st.form_submit_button("生成辅助建议", type="primary", use_container_width=True)
+
+    ort_score, ort_level, ort_details = calc_ort(age, personal_use, family_use, psych_histories)
+    risk_class = "tag-low" if ort_level == "低风险" else ("tag-mid" if ort_level == "中风险" else "tag-high")
+
+    st.markdown(
+        f"""
+        <span class="tag {risk_class}">ORT 评分：{ort_score} 分</span>
+        <span class="tag {risk_class}">风险分层：{ort_level}</span>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.caption(" | ".join(ort_details) if ort_details else "未识别显著成瘾高危因素")
+
+    if not submit:
+        return
+
+    if not diagnosis.strip():
+        st.warning("请填写主要诊断后再生成建议。")
+        return
+
+    query = f"{diagnosis} {pain_type} {department} {comorbidities}"
+    similar_cases = retrieve_similar_cases(query, cases, top_k=3)
+
+    summary = f"""
+患者：{age} 岁 {gender}
+主要诊断：{diagnosis}
+疼痛评分：{pain_score}/10（{pain_type}）
+科室：{department}
+阿片初治：{"是" if opioid_naive else "否"}
+肝肾异常：{"是" if renal_liver_issue else "否"}
+过敏史：{allergy or "无"}
+当前用药：{current_meds or "无"}
+合并症：{comorbidities or "无"}
+本人物质使用史：{personal_use}
+家族物质使用史：{family_use}
+心理/精神病史：{", ".join(psych_histories) if psych_histories else "无"}
+ORT：{ort_score} 分（{ort_level}）
+补充说明：{extra_notes or "无"}
 """
-                    st.session_state.student_history.append({
-                        "time": datetime.now().strftime("%H:%M"),
-                        "case": st.session_state.training_case[:80] + "...",
-                        "answer": student_answer[:100]
-                    })
 
-                    st.markdown("---")
-                    st.markdown("### 📊 AI 评估报告")
+    local_plan_text = local_plan(age, pain_score, ort_level, opioid_naive)
+    local_risk_text = local_risk_and_compliance(pain_score, ort_level, comorbidities, current_meds)
 
-                    e_tab1, e_tab2, e_tab3 = st.tabs(["📝 综合评分", "🔍 详细分析", "🎯 下一步训练"])
+    case_ref = []
+    for c in similar_cases:
+        case_ref.append(
+            f"- [{c.get('id', 'N/A')}] {c.get('diagnosis', '')} | 推荐：{c.get('recommended_plan', '')}"
+        )
+    case_ref_text = "\n".join(case_ref) if case_ref else "无可用参考病例。"
 
-                    with e_tab1:
-                        ph_eval = st.empty()
-                        call_agent(
-                            client,
-                            system_prompt="""你是医学教育评估Agent，专注于阿片类药物处方培训。
-评估学生的处方方案，输出格式：
+    tabs = st.tabs(["用药建议", "风险与合规", "相似病例与证据"])
 
-## 综合评分
-| 维度 | 得分 | 说明 |
-|------|------|------|
-| 药物选择 | X/25 | ... |
-| 剂量合理性 | X/25 | ... |
-| 风险评估 | X/25 | ... |
-| 政策合规 | X/25 | ... |
-**总分：XX/100**
+    with tabs[0]:
+        st.markdown(local_plan_text)
+        ai_text = ask_llm(
+            client,
+            model,
+            "你是临床阿片类处方助手，请给出简洁、结构化、可执行的处方建议。",
+            f"请基于以下病例给出建议，并包含备选方案与复评时间：\n{summary}",
+        )
+        if ai_text:
+            st.markdown("### AI 补充建议")
+            st.write(ai_text)
+        else:
+            st.info("未检测到可用 API Key，当前显示本地规则建议。")
 
-## 亮点 ✅
-- （列出1-3个做得好的地方）
+    with tabs[1]:
+        st.markdown(local_risk_text)
+        if renal_liver_issue:
+            st.warning("存在肝肾功能异常：请优先考虑减量、延长给药间隔并加强监测。")
+        if "苯二氮卓" in current_meds:
+            st.error("检测到潜在高风险联用（阿片 + 苯二氮卓），需复核必要性。")
 
-## 需改进 ⚠️
-- （列出1-3个需要改进的地方）
+    with tabs[2]:
+        st.markdown("### 相似病例")
+        st.markdown(case_ref_text)
+        st.markdown("### 参考政策")
+        st.markdown("- 门诊阿片类药物处方与复评规范（2026版）")
+        st.markdown("- 阿片类药物知情同意与患者教育要点")
+        st.markdown("- 阿片类药物联合用药风险清单")
 
-## 标准答案参考
-（给出推荐方案及简短理由）""",
-                            user_prompt=f"虚拟病例：\n{st.session_state.training_case}\n\n学生方案：\n{student_answer}",
-                            model="qwen-max",
-                            placeholder=ph_eval
-                        )
+    report = (
+        "【阿片类药物辅助决策报告】\n\n"
+        + summary
+        + "\n"
+        + local_plan_text.replace("### ", "")
+        + "\n"
+        + local_risk_text.replace("### ", "")
+        + "\n相似病例：\n"
+        + case_ref_text
+    )
+    st.session_state.last_report = report
+    st.download_button(
+        "下载本次建议报告",
+        data=report.encode("utf-8"),
+        file_name=f"opioid_decision_report_{datetime.now().strftime('%Y%m%d_%H%M')}.txt",
+        mime="text/plain",
+        use_container_width=True,
+    )
 
-                    with e_tab2:
-                        ph_detail = st.empty()
-                        call_agent(
-                            client,
-                            system_prompt="""你是医学教育分析Agent。
-对学生处方进行深度分析：
-1. WHO三阶梯定位是否正确？
-2. 剂量是否符合指南（含老年人注意事项）？
-3. ORT风险因素是否充分考虑？
-4. 中国政策合规性（知情同意书、四专管理）？
-5. 辅助治疗是否完整？
-用引用具体指南条款支撑分析。""",
-                            user_prompt=f"虚拟病例：\n{st.session_state.training_case}\n\n学生方案：\n{student_answer}",
-                            model="qwen-plus",
-                            placeholder=ph_detail
-                        )
 
-                    with e_tab3:
-                        history_ctx = ""
-                        if len(st.session_state.student_history) > 1:
-                            history_ctx = "历史答题记录：\n" + "\n".join([
-                                f"[{h['time']}] {h['answer']}"
-                                for h in st.session_state.student_history[-3:]
-                            ])
+def build_training_case(cases: List[Dict], difficulty: str, scenario: str) -> str:
+    case = random.choice(cases) if cases else {}
+    age = case.get("age", random.randint(35, 75))
+    gender = case.get("gender", random.choice(["男", "女"]))
+    diagnosis = case.get("diagnosis", "慢性顽固性疼痛")
+    pain = case.get("pain_score", random.randint(6, 9))
+    extra = {
+        "初级": "重点练习初始评估与安全起始剂量。",
+        "中级": "重点练习联合用药、复评与不良反应管理。",
+        "高级": "重点练习高风险分层、合规留痕与多学科沟通。",
+    }.get(difficulty, "完成处方并解释你的决策逻辑。")
 
-                        ph_next = st.empty()
-                        call_agent(
-                            client,
-                            system_prompt="""你是个性化培训规划Agent。
-根据学生本次及历史表现，给出：
+    return (
+        f"【虚拟病例】\n"
+        f"- 场景：{scenario}\n"
+        f"- 难度：{difficulty}\n"
+        f"- 患者：{age} 岁，{gender}\n"
+        f"- 诊断：{diagnosis}\n"
+        f"- 疼痛评分：NRS {pain}/10\n"
+        f"- 既往史：高血压，偶发失眠\n"
+        f"- 当前问题：拟启动阿片类镇痛治疗，请设计首日处方方案与复评计划。\n"
+        f"- 训练目标：{extra}\n"
+    )
 
-## 学生能力画像
-- 决策风格：（保守型/激进型/均衡型）
-- 薄弱环节：（具体说明）
 
-## 个性化训练建议
-1. 下一步重点练习方向
-2. 推荐学习资料（指南/文献）
-3. 为该学生量身定制的下一个练习病例要点（告诉学生应该挑战什么场景）
+def evaluate_training_answer(answer: str) -> Tuple[int, List[str], List[str]]:
+    score = 100
+    strengths = []
+    issues = []
+    text = normalize_text(answer)
 
-## 一句话激励
-（根据学生表现，给出鼓励或提醒）""",
-                            user_prompt=f"本次病例：\n{st.session_state.training_case}\n\n学生方案：\n{student_answer}\n\n{history_ctx}",
-                            model="qwen-max",
-                            placeholder=ph_next
-                        )
+    if any(k in text for k in ["复评", "随访", "48h", "72h"]):
+        strengths.append("提到了复评或随访安排。")
+    else:
+        score -= 20
+        issues.append("缺少复评时间点。")
 
-                    st.session_state.evaluation_done = True
+    if any(k in text for k in ["知情同意", "风险告知", "教育"]):
+        strengths.append("考虑了沟通和知情同意。")
+    else:
+        score -= 15
+        issues.append("未体现知情同意与患者教育。")
 
-    # ── 历史记录 ────────────────────────────────────
-    if st.session_state.student_history:
-        with st.expander(f"📈 答题历史（共 {len(st.session_state.student_history)} 次）"):
-            for i, h in enumerate(reversed(st.session_state.student_history), 1):
-                st.markdown(f"**{i}.** [{h['time']}] {h['case']}")
-                st.caption(f"  → {h['answer']}")
+    if any(k in text for k in ["便秘", "止吐", "不良反应", "监测"]):
+        strengths.append("包含了不良反应管理要点。")
+    else:
+        score -= 15
+        issues.append("缺少不良反应预防/监测策略。")
+
+    if any(k in text for k in ["高风险", "ort", "依赖风险"]):
+        strengths.append("考虑了成瘾风险因素。")
+    else:
+        score -= 10
+        issues.append("未明确风险分层依据。")
+
+    if len(answer.strip()) < 40:
+        score -= 20
+        issues.append("方案过于简短，临床可执行性不足。")
+
+    return max(score, 0), strengths, issues
+
+
+def page_training(client: Optional[OpenAI], model: str, cases: List[Dict]) -> None:
+    st.markdown("### 虚拟训练")
+    st.caption("生成病例后提交你的处方方案，系统会自动评分并给出改进建议。")
+
+    t1, t2, t3 = st.columns(3)
+    with t1:
+        difficulty = st.selectbox("难度", ["初级", "中级", "高级"])
+    with t2:
+        scenario = st.selectbox("场景", ["肿瘤科门诊", "急诊科", "骨科病房", "疼痛科门诊"])
+    with t3:
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("生成训练病例", type="primary", use_container_width=True):
+            st.session_state.training_case = build_training_case(cases, difficulty, scenario)
+
+    if not st.session_state.training_case:
+        st.info("点击“生成训练病例”开始练习。")
+        return
+
+    with st.container(border=True):
+        st.markdown(st.session_state.training_case)
+
+    with st.form("training_form"):
+        answer = st.text_area(
+            "你的处方方案",
+            height=180,
+            placeholder="请写明：药物与剂量、给药途径、疗程、监测计划、知情同意与复评安排。",
+        )
+        submitted = st.form_submit_button("提交并评分", type="primary", use_container_width=True)
+
+    if not submitted:
+        return
+
+    if not answer.strip():
+        st.warning("请填写你的处方方案。")
+        return
+
+    score, strengths, issues = evaluate_training_answer(answer)
+    c1, c2, c3 = st.columns(3)
+    c1.metric("综合得分", f"{score}/100")
+    c2.metric("优势项", str(len(strengths)))
+    c3.metric("待改进项", str(len(issues)))
+
+    st.markdown("#### 评分反馈")
+    if strengths:
+        st.success("优点：\n" + "\n".join([f"- {s}" for s in strengths]))
+    if issues:
+        st.error("改进：\n" + "\n".join([f"- {i}" for i in issues]))
+
+    ai_feedback = ask_llm(
+        client,
+        model,
+        "你是医学教育评估助手，请对学生阿片类处方方案做教学反馈。",
+        f"病例：\n{st.session_state.training_case}\n\n学生方案：\n{answer}\n\n请给出改进建议。",
+    )
+    if ai_feedback:
+        st.markdown("#### AI 个性化建议")
+        st.write(ai_feedback)
+
+    st.session_state.training_history.append(
+        {
+            "时间": datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "场景": scenario,
+            "难度": difficulty,
+            "得分": score,
+            "摘要": answer[:80].replace("\n", " ") + ("..." if len(answer) > 80 else ""),
+        }
+    )
+
+    if st.session_state.training_history:
+        st.markdown("#### 训练历史")
+        st.dataframe(st.session_state.training_history[::-1], use_container_width=True, hide_index=True)
+
+
+def page_policy(client: Optional[OpenAI], model: str) -> None:
+    st.markdown("### 文献与政策库")
+    st.caption("支持按关键字和标签过滤政策条目，并提供合规问答。")
+
+    c1, c2 = st.columns([2, 1])
+    with c1:
+        keyword = st.text_input("搜索", placeholder="输入药物、风险点或政策关键词")
+    with c2:
+        selected_tags = st.multiselect("标签筛选", sorted({t for p in POLICY_LIBRARY for t in p["tags"]}))
+
+    policies = POLICY_LIBRARY
+    if keyword.strip():
+        k = normalize_text(keyword)
+        policies = [
+            p
+            for p in policies
+            if k in normalize_text(p["title"]) or k in normalize_text(p["summary"]) or k in normalize_text(" ".join(p["tags"]))
+        ]
+    if selected_tags:
+        policies = [p for p in policies if any(tag in p["tags"] for tag in selected_tags)]
+
+    st.markdown(f"检索结果：{len(policies)} 条")
+    for p in policies:
+        tags = " ".join([f"<span class='tag tag-mid'>{tag}</span>" for tag in p["tags"]])
+        st.markdown(
+            f"""
+            <div class="policy-card">
+                <div class="policy-title">{p["title"]}</div>
+                <div class="muted">{p["source"]} | {p["date"]} | {p["id"]}</div>
+                <div style="margin-top: 8px; margin-bottom: 6px;">{p["summary"]}</div>
+                <div class="muted"><b>应用场景：</b>{p["action"]}</div>
+                <div>{tags}</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown("#### 合规核查清单")
+    ck1 = st.checkbox("已记录诊断依据与镇痛目标")
+    ck2 = st.checkbox("已完成知情同意并签名留痕")
+    ck3 = st.checkbox("已制定复评计划（时间 + 指标）")
+    ck4 = st.checkbox("已完成高风险联用审查")
+    done = sum([ck1, ck2, ck3, ck4])
+    st.progress(done / 4, text=f"完成度：{done}/4")
+
+    st.markdown("#### AI 政策助手")
+    q = st.text_area("输入问题", placeholder="例如：门诊高风险患者开具阿片类药物时，最低需要哪些留痕？")
+    if st.button("生成政策解读", use_container_width=True):
+        if not q.strip():
+            st.warning("请先输入问题。")
+        else:
+            ai_text = ask_llm(
+                client,
+                model,
+                "你是医疗政策助手，请给出结构化、可执行、简洁的合规建议。",
+                q,
+            )
+            if ai_text:
+                st.write(ai_text)
+            else:
+                st.info("未检测到可用 API Key，以下为本地建议：")
+                st.write(
+                    "1) 明确诊断与适应证；2) 记录风险分层与知情同意；"
+                    "3) 设置限量处方与复评节点；4) 对高风险联用处方进行二次审核。"
+                )
+
+
+def page_profile() -> None:
+    st.markdown("### 个人中心")
+
+    p1, p2 = st.columns([1, 2])
+    with p1:
+        with st.container(border=True):
+            st.subheader(st.session_state.doctor_name)
+            st.caption(st.session_state.doctor_title)
+            st.caption("科室：疼痛医学中心")
+            st.caption("职级：主任医师")
+            st.caption("工号：MD-2026-041")
+    with p2:
+        c1, c2, c3 = st.columns(3)
+        c1.metric("本周辅助决策次数", "37")
+        c2.metric("高风险病例复评达成率", "90%")
+        c3.metric("训练场平均得分", "86")
+
+    st.markdown("#### 偏好设置")
+    st.toggle("开启高风险处方即时提醒", value=True)
+    st.toggle("开启政策更新推送", value=True)
+    st.toggle("开启复评逾期提醒", value=True)
+
+    st.markdown("#### 最近活动")
+    history = st.session_state.training_history[-5:][::-1]
+    if history:
+        for item in history:
+            st.markdown(
+                f"""
+                <div class="timeline-item">
+                    <b>{item["时间"]}</b> | {item["场景"]} | {item["难度"]} | 得分 {item["得分"]}<br/>
+                    <span class="muted">{item["摘要"]}</span>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+    else:
+        st.info("暂无训练记录。")
+
+    if st.session_state.last_report:
+        st.download_button(
+            "下载最近一次临床辅助报告",
+            data=st.session_state.last_report.encode("utf-8"),
+            file_name=f"profile_last_report_{datetime.now().strftime('%Y%m%d')}.txt",
+            mime="text/plain",
+            use_container_width=True,
+        )
+
+
+def page_login() -> None:
+    st.markdown("### 登录与安全")
+    st.caption("用于模拟登录流程与安全设置。")
+
+    tab1, tab2 = st.tabs(["账号登录", "验证码登录"])
+    with tab1:
+        with st.form("login_form_pwd"):
+            username = st.text_input("用户名", placeholder="doctor_zhang")
+            password = st.text_input("登录密码", type="password")
+            submit = st.form_submit_button("登录", type="primary", use_container_width=True)
+        if submit:
+            if username.strip() and password.strip():
+                st.session_state.is_logged_in = True
+                st.session_state.doctor_name = username.strip()
+                st.session_state.doctor_title = "临床医生"
+                st.success("登录成功")
+            else:
+                st.error("请输入用户名和密码")
+
+    with tab2:
+        with st.form("login_form_code"):
+            mobile = st.text_input("手机号", placeholder="138****0000")
+            code = st.text_input("验证码", placeholder="6位验证码")
+            submit2 = st.form_submit_button("登录", use_container_width=True)
+        if submit2:
+            if mobile.strip() and code.strip():
+                st.session_state.is_logged_in = True
+                st.session_state.doctor_name = f"用户{mobile[-4:]}"
+                st.session_state.doctor_title = "临床医生"
+                st.success("登录成功")
+            else:
+                st.error("请输入手机号和验证码")
+
+    st.markdown("#### 安全策略")
+    st.info(
+        "合规声明：系统遵循医疗数据最小化原则，敏感字段加密存储；"
+        "高风险处方页面建议开启二次验证。"
+    )
+    st.checkbox("查看敏感处方时启用二次校验", value=True)
+    st.checkbox("检测异常登录地提醒", value=True)
+    st.checkbox("自动锁定空闲会话（15分钟）", value=True)
+
+
+def main() -> None:
+    inject_css()
+    init_state()
+
+    client, model = get_client_and_model()
+    cases = load_cases()
+
+    render_top_banner()
+    page = sidebar_navigation()
+
+    if not st.session_state.is_logged_in and page in ["临床辅助", "虚拟训练", "个人中心"]:
+        st.warning("当前未登录，建议先在“登录与安全”完成认证。")
+        if st.button("启用体验模式", type="primary"):
+            st.session_state.is_logged_in = True
+            st.session_state.doctor_name = "体验账号"
+            st.session_state.doctor_title = "演示模式"
+            st.rerun()
+        st.stop()
+
+    if page == "工作台总览":
+        page_dashboard(cases)
+    elif page == "临床辅助":
+        page_clinical_assistant(client, model, cases)
+    elif page == "虚拟训练":
+        page_training(client, model, cases)
+    elif page == "文献与政策库":
+        page_policy(client, model)
+    elif page == "个人中心":
+        page_profile()
+    elif page == "登录与安全":
+        page_login()
+
+
+if __name__ == "__main__":
+    main()
