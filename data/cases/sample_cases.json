@@ -4,11 +4,17 @@
     "source": "病例收集2",
     "category": "急危重症",
     "diagnosis": "急性冠脉综合征（ACS）",
-    "age": 65, "gender": "男",
+    "age": 65,
+    "gender": "男",
     "pain_score": 8,
     "pain_type": "非癌性急性疼痛",
-    "current_meds": ["硝酸甘油", "阿司匹林"],
-    "comorbidities": ["高血压"],
+    "current_meds": [
+      "硝酸甘油",
+      "阿司匹林"
+    ],
+    "comorbidities": [
+      "高血压"
+    ],
     "substance_history": null,
     "recommended_plan": "吗啡 5-10mg 静脉注射；评估无禁忌症后给药；监测呼吸及血压",
     "evidence": "急危重症专家共识强推荐（★★★★★）；最大耐受抗缺血药物无效时吗啡为首选",
@@ -20,11 +26,15 @@
     "source": "病例收集2",
     "category": "急危重症",
     "diagnosis": "急性主动脉夹层",
-    "age": 50, "gender": "男",
+    "age": 50,
+    "gender": "男",
     "pain_score": 9,
     "pain_type": "非癌性急性疼痛",
     "current_meds": [],
-    "comorbidities": ["高血压", "长期吸烟"],
+    "comorbidities": [
+      "高血压",
+      "长期吸烟"
+    ],
     "substance_history": "长期吸烟",
     "recommended_plan": "吗啡 5-10mg 静脉注射；镇痛是首要治疗，优先于降压",
     "evidence": "急危重症专家共识强推荐；有效镇痛可降低交感神经兴奋，是控制夹层病情关键",
@@ -36,7 +46,8 @@
     "source": "病例收集2",
     "category": "急危重症",
     "diagnosis": "急性胰腺炎",
-    "age": 38, "gender": "女",
+    "age": 38,
+    "gender": "女",
     "pain_score": 8,
     "pain_type": "非癌性急性疼痛",
     "current_meds": [],
@@ -52,7 +63,8 @@
     "source": "病例收集2",
     "category": "急危重症",
     "diagnosis": "严重创伤（左股骨干骨折）",
-    "age": 25, "gender": "男",
+    "age": 25,
+    "gender": "男",
     "pain_score": 9,
     "pain_type": "非癌性急性疼痛",
     "current_meds": [],
@@ -68,7 +80,8 @@
     "source": "病例收集2",
     "category": "骨骼肌肉疼痛",
     "diagnosis": "急性腰椎间盘突出（腰痛+左下肢放射痛）",
-    "age": 45, "gender": "男",
+    "age": 45,
+    "gender": "男",
     "pain_score": 7,
     "pain_type": "非癌性急性疼痛",
     "current_meds": [],
@@ -84,7 +97,8 @@
     "source": "病例收集2",
     "category": "骨骼肌肉疼痛",
     "diagnosis": "急性膝关节滑膜炎（疑似骨刺）",
-    "age": 60, "gender": "女",
+    "age": 60,
+    "gender": "女",
     "pain_score": 6,
     "pain_type": "非癌性急性疼痛",
     "current_meds": [],
@@ -100,7 +114,8 @@
     "source": "病例收集2",
     "category": "泌尿系结石",
     "diagnosis": "急性输尿管结石嵌顿（右侧，6mm）",
-    "age": 35, "gender": "男",
+    "age": 35,
+    "gender": "男",
     "pain_score": 10,
     "pain_type": "非癌性急性疼痛",
     "current_meds": [],
@@ -116,11 +131,17 @@
     "source": "病例收集2",
     "category": "泌尿系结石",
     "diagnosis": "儿童输尿管结石（直径>1cm）伴梗阻性肾积水+尿路感染",
-    "age": 7, "gender": "男",
+    "age": 7,
+    "gender": "男",
     "pain_score": 10,
     "pain_type": "非癌性急性疼痛",
-    "current_meds": ["抗感染药物", "补液"],
-    "comorbidities": ["尿路感染"],
+    "current_meds": [
+      "抗感染药物",
+      "补液"
+    ],
+    "comorbidities": [
+      "尿路感染"
+    ],
     "substance_history": null,
     "recommended_plan": "小儿剂量芬太尼镇痛；严密监护；同步抗感染补液；紧急输尿管镜手术",
     "evidence": "急危重症专家共识；儿童结石痛常被掩盖或误诊；确诊剧痛患儿严密监护下阿片类安全必要",
@@ -132,10 +153,13 @@
     "source": "病例收集3",
     "category": "围手术期",
     "diagnosis": "结肠癌根治术（术后镇痛）",
-    "age": 65, "gender": "男",
+    "age": 65,
+    "gender": "男",
     "pain_score": 5,
     "pain_type": "非癌性急性疼痛",
-    "current_meds": ["瑞芬太尼（术中）"],
+    "current_meds": [
+      "瑞芬太尼（术中）"
+    ],
     "comorbidities": [],
     "substance_history": null,
     "recommended_plan": "PCIA：舒芬太尼100μg + 昂丹司琼8mg，生理盐水稀释至100ml；背景输注2ml/h，单次按压2ml，锁定15分钟",
@@ -148,11 +172,17 @@
     "source": "病例收集3",
     "category": "围手术期",
     "diagnosis": "肺癌肺叶切除术（术后镇痛）",
-    "age": 58, "gender": "女",
+    "age": 58,
+    "gender": "女",
     "pain_score": 6,
     "pain_type": "非癌性急性疼痛",
-    "current_meds": ["舒芬太尼（诱导0.5μg/kg）", "舒芬太尼（术中0.1μg/kg/h）"],
-    "comorbidities": ["肺癌"],
+    "current_meds": [
+      "舒芬太尼（诱导0.5μg/kg）",
+      "舒芬太尼（术中0.1μg/kg/h）"
+    ],
+    "comorbidities": [
+      "肺癌"
+    ],
     "substance_history": null,
     "recommended_plan": "PCEA（硬膜外镇痛）：罗哌卡因150mg + 芬太尼100μg，生理盐水至100ml；背景输注4ml/h，单次按压2ml，锁定20分钟；72h后改口服",
     "evidence": "胸科术后硬膜外镇痛为金标准；PCEA优于PCIA，减少全身阿片类用量",
@@ -164,10 +194,14 @@
     "source": "病例收集3",
     "category": "围手术期",
     "diagnosis": "人工髋关节置换术（术后镇痛）",
-    "age": 72, "gender": "男",
+    "age": 72,
+    "gender": "男",
     "pain_score": 5,
     "pain_type": "非癌性急性疼痛",
-    "current_meds": ["芬太尼（诱导3μg/kg）", "右美托咪定+瑞芬太尼（术中）"],
+    "current_meds": [
+      "芬太尼（诱导3μg/kg）",
+      "右美托咪定+瑞芬太尼（术中）"
+    ],
     "comorbidities": [],
     "substance_history": null,
     "recommended_plan": "PCIA：芬太尼400μg + 氟比洛芬酯50mg，生理盐水至100ml；背景输注2ml/h，单次按压1.5ml，锁定15分钟",
@@ -180,10 +214,14 @@
     "source": "病例收集3",
     "category": "围手术期",
     "diagnosis": "股骨颈骨折内固定术（高龄患者）",
-    "age": 85, "gender": "女",
+    "age": 85,
+    "gender": "女",
     "pain_score": 4,
     "pain_type": "非癌性急性疼痛",
-    "current_meds": ["小剂量舒芬太尼（诱导0.3μg/kg）", "低剂量瑞芬太尼+丙泊酚（术中）"],
+    "current_meds": [
+      "小剂量舒芬太尼（诱导0.3μg/kg）",
+      "低剂量瑞芬太尼+丙泊酚（术中）"
+    ],
     "comorbidities": [],
     "substance_history": null,
     "recommended_plan": "小剂量PCIA：舒芬太尼50μg + 昂丹司琼4mg，生理盐水至100ml；背景输注1ml/h（减量），单次按压1ml，锁定20分钟",
@@ -196,11 +234,16 @@
     "source": "病例收集3",
     "category": "围手术期",
     "diagnosis": "胃癌根治术（合并COPD）",
-    "age": 68, "gender": "男",
+    "age": 68,
+    "gender": "男",
     "pain_score": 5,
     "pain_type": "非癌性急性疼痛",
-    "current_meds": ["阿片类（术中常规剂量70%）"],
-    "comorbidities": ["慢性阻塞性肺疾病（COPD）"],
+    "current_meds": [
+      "阿片类（术中常规剂量70%）"
+    ],
+    "comorbidities": [
+      "慢性阻塞性肺疾病（COPD）"
+    ],
     "substance_history": null,
     "recommended_plan": "多模式镇痛：PCIA（舒芬太尼75μg + 酮咯酸氨丁三醇30mg）+ 局部神经阻滞；阿片用量控制在常规70%；鼻导管吸氧",
     "evidence": "呼吸系统疾病患者阿片类减量；多模式镇痛减少阿片用量；局部神经阻滞补充镇痛",
@@ -212,10 +255,14 @@
     "source": "病例收集1",
     "category": "培训题",
     "diagnosis": "大面积烧伤（约60%TBSA，躯干+双上肢）",
-    "age": 22, "gender": "男",
+    "age": 22,
+    "gender": "男",
     "pain_score": 8,
     "pain_type": "非癌性急性疼痛",
-    "current_meds": ["对乙酰氨基酚缓释片（口服，无效）", "外用湿冷敷液体（无效）"],
+    "current_meds": [
+      "对乙酰氨基酚缓释片（口服，无效）",
+      "外用湿冷敷液体（无效）"
+    ],
     "comorbidities": [],
     "substance_history": null,
     "recommended_plan": "多模式镇痛：芬太尼50μg 静脉注射 + 创面局部利多卡因凝胶混悬液",
@@ -236,11 +283,19 @@
     "source": "病例收集1",
     "category": "培训题",
     "diagnosis": "晚期非小细胞肺癌（颈+腰骶部骨转移，神经根性疼痛）",
-    "age": 69, "gender": "女",
+    "age": 69,
+    "gender": "女",
     "pain_score": 8,
     "pain_type": "癌性疼痛",
-    "current_meds": ["羟考酮片20mg（效果不佳，NRS仍7-8）"],
-    "comorbidities": ["非小细胞肺癌（靶向治疗后进展）", "顽固性便秘", "恶心干呕", "食欲下降"],
+    "current_meds": [
+      "羟考酮片20mg（效果不佳，NRS仍7-8）"
+    ],
+    "comorbidities": [
+      "非小细胞肺癌（靶向治疗后进展）",
+      "顽固性便秘",
+      "恶心干呕",
+      "食欲下降"
+    ],
     "substance_history": null,
     "recommended_plan": "多模式镇痛：口服吗啡缓释片基础镇痛 + 爆发痛即刻解救 + 乳果糖/甲氧氯普胺口服 + 局部理疗 + 心理干预",
     "evidence": "WHO三阶梯第三阶梯；《癌症疼痛诊疗规范》；神经根性疼痛评分4分需联合镇痛；爆发痛管理规范",
@@ -260,7 +315,8 @@
     "source": "病例收集1",
     "category": "培训题",
     "diagnosis": "腹腔镜胆囊切除术后疼痛（术后24小时）",
-    "age": 45, "gender": "男",
+    "age": 45,
+    "gender": "男",
     "pain_score": 7,
     "pain_type": "非癌性急性疼痛",
     "current_meds": [],
@@ -284,11 +340,16 @@
     "source": "病例收集1",
     "category": "培训题",
     "diagnosis": "类风湿关节炎（活动期，多关节受累）",
-    "age": 48, "gender": "男",
+    "age": 48,
+    "gender": "男",
     "pain_score": 5,
     "pain_type": "非癌性慢性疼痛",
-    "current_meds": ["激素（4月内曾使用）"],
-    "comorbidities": ["类风湿关节炎（RF 1:80，抗CCP>200IU/ml，骨质破坏）"],
+    "current_meds": [
+      "激素（4月内曾使用）"
+    ],
+    "comorbidities": [
+      "类风湿关节炎（RF 1:80，抗CCP>200IU/ml，骨质破坏）"
+    ],
     "substance_history": null,
     "recommended_plan": "甲氨蝶呤（DMARDs调节免疫）+ NSAIDs辅助镇痛；不使用阿片类",
     "evidence": "类风湿关节炎治疗指南；DMARDs是根本治疗，抑制滑膜炎阻止关节破坏；阿片类对自身免疫性关节炎无效",
@@ -301,5 +362,216 @@
     },
     "correct_answer": "C",
     "answer_analysis": "A仅对症无法阻止关节破坏；B曲马多对自身免疫无效；C甲氨蝶呤治本+NSAIDs辅助为标准方案；D长期激素副作用大不推荐"
+  },
+  {
+    "id": "CASE-A09",
+    "source": "阿片类药物急危重症专家共识2024",
+    "category": "急危重症",
+    "diagnosis": "急性主动脉夹层（StanfordA/B型）",
+    "age": 55,
+    "gender": "男",
+    "pain_score": 9,
+    "pain_type": "非癌性急性疼痛",
+    "current_meds": [
+      "硝普钠",
+      "美托洛尔"
+    ],
+    "comorbidities": [
+      "高血压",
+      "马凡综合征"
+    ],
+    "substance_history": null,
+    "recommended_plan": "吗啡5-10mg IV 或芬太尼25-100μg IV；镇痛优先于降压治疗；目标NRS≤3分",
+    "evidence": "专家共识强推荐（★★★★★）；有效镇痛降低交感兴奋，减少主动脉壁张力，控制夹层进展",
+    "risk_notes": "监测呼吸抑制；夹层A型需急诊手术，镇痛为术前过渡；避免哌替啶（代谢产物有神经毒性）",
+    "outcome": "患者疼痛明显缓解，血压趋于稳定，顺利送手术室"
+  },
+  {
+    "id": "CASE-A10",
+    "source": "阿片类药物急危重症专家共识2024",
+    "category": "急危重症",
+    "diagnosis": "急性重症胰腺炎（SAP）",
+    "age": 45,
+    "gender": "男",
+    "pain_score": 9,
+    "pain_type": "非癌性急性疼痛",
+    "current_meds": [
+      "生长抑素",
+      "质子泵抑制剂"
+    ],
+    "comorbidities": [
+      "高脂血症"
+    ],
+    "substance_history": "大量饮酒史",
+    "recommended_plan": "氢吗啡酮0.2-0.6mg IV 每4小时；或芬太尼PCA；禁用吗啡（可能升高Oddi括约肌压力）；禁用哌替啶",
+    "evidence": "专家共识强推荐；氢吗啡酮相比吗啡对Oddi括约肌影响更小，为SAP首选阿片类",
+    "risk_notes": "吗啡和哌替啶均禁用于急性胰腺炎；NSAIDs可辅助镇痛但需监测肾功能；镇痛同时监测腹部体征",
+    "outcome": "腹痛VAS降至3分，患者可配合治疗，无呼吸抑制发生"
+  },
+  {
+    "id": "CASE-A11",
+    "source": "阿片类药物急危重症专家共识2024",
+    "category": "急危重症",
+    "diagnosis": "重型颅脑创伤（GCS≤8，有创机械通气）",
+    "age": 32,
+    "gender": "男",
+    "pain_score": 7,
+    "pain_type": "非癌性急性疼痛",
+    "current_meds": [
+      "甘露醇",
+      "咪达唑仑"
+    ],
+    "comorbidities": [],
+    "substance_history": null,
+    "recommended_plan": "芬太尼0.5-2μg/kg/h持续泵入；禁用吗啡（可能升高颅内压，影响神经评估）；镇痛深度NRS评分CPOT量表≤2",
+    "evidence": "专家共识强推荐；芬太尼不升高颅内压，不影响神经系统评估，为颅脑损伤首选",
+    "risk_notes": "禁用吗啡（组胺释放可扩张脑血管，升高颅内压）；定时神经功能评估；CPOT量表评估无意识患者疼痛",
+    "outcome": "CPOT评分2分，患者循环稳定，颅内压未见升高，顺利进行脑室引流手术"
+  },
+  {
+    "id": "CASE-A12",
+    "source": "阿片类药物急危重症专家共识2024",
+    "category": "急危重症",
+    "diagnosis": "急性左心衰竭伴肺水肿",
+    "age": 72,
+    "gender": "女",
+    "pain_score": 7,
+    "pain_type": "非癌性急性疼痛",
+    "current_meds": [
+      "呋塞米",
+      "硝酸甘油",
+      "ACEI"
+    ],
+    "comorbidities": [
+      "冠心病",
+      "高血压",
+      "糖尿病"
+    ],
+    "substance_history": null,
+    "recommended_plan": "吗啡2.5-5mg 缓慢静脉注射（小剂量）；可缓解焦虑、降低前负荷、减轻呼吸困难；必要时可重复",
+    "evidence": "专家共识推荐；吗啡扩张静脉，降低心脏前负荷，同时镇静镇痛，改善急性肺水肿症状",
+    "risk_notes": "必须小剂量缓慢注射，严密监测血压和呼吸；低血压/休克禁用；慢性阻塞性肺病慎用；需备纳洛酮拮抗",
+    "outcome": "患者呼吸困难和焦虑明显改善，呼吸频率从32次/分降至22次/分，配合无创呼吸机治疗"
+  },
+  {
+    "id": "CASE-A13",
+    "source": "阿片类药物急危重症专家共识2024",
+    "category": "急危重症",
+    "diagnosis": "结肠癌致恶性机械性肠梗阻（姑息治疗）",
+    "age": 68,
+    "gender": "女",
+    "pain_score": 7,
+    "pain_type": "癌性疼痛",
+    "current_meds": [
+      "地塞米松"
+    ],
+    "comorbidities": [
+      "结肠癌IV期",
+      "腹膜转移"
+    ],
+    "substance_history": null,
+    "recommended_plan": "吗啡缓释片或芬太尼透皮贴剂（强效阿片类）；联合奥曲肽减少消化液分泌；姑息镇痛为主",
+    "evidence": "专家共识推荐；恶性肠梗阻不适合手术时，强效阿片类镇痛是姑息治疗核心，改善生活质量",
+    "risk_notes": "注意阿片类便秘加重梗阻风险，酌情使用甲基纳曲酮；监测肠鸣音和腹胀变化；关注患者及家属意愿",
+    "outcome": "腹痛NRS降至3分，患者可进少量流质，生活质量改善，家属表示满意"
+  },
+  {
+    "id": "CASE-A14",
+    "source": "阿片类药物急危重症专家共识2024",
+    "category": "急危重症",
+    "diagnosis": "大面积烧伤ICU镇痛（烧伤面积>40% TBSA）",
+    "age": 35,
+    "gender": "男",
+    "pain_score": 10,
+    "pain_type": "非癌性急性疼痛",
+    "current_meds": [
+      "咪达唑仑",
+      "丙泊酚"
+    ],
+    "comorbidities": [],
+    "substance_history": null,
+    "recommended_plan": "舒芬太尼PCA（背景剂量+追加量）；换药/清创前芬太尼3-5μg/kg预处理；操作后镇痛评估；避免长时间单一阿片类",
+    "evidence": "专家共识强推荐；烧伤患者疼痛剧烈，PCA模式提高镇痛个体化；操作性疼痛需单独预处理",
+    "risk_notes": "需区分背景痛与操作性疼痛分别处理；长期使用监测阿片耐受和依赖；多模式镇痛（局麻+阿片类）可减少总量",
+    "outcome": "患者CPOT评分从8分降至2分，换药操作顺利完成，呼吸循环稳定"
+  },
+  {
+    "id": "CASE-A15",
+    "source": "阿片类药物急危重症专家共识2024",
+    "category": "急危重症",
+    "diagnosis": "急诊困难气道，需紧急气管插管",
+    "age": 60,
+    "gender": "男",
+    "pain_score": 6,
+    "pain_type": "非癌性急性疼痛",
+    "current_meds": [],
+    "comorbidities": [
+      "高血压",
+      "肥胖"
+    ],
+    "substance_history": null,
+    "recommended_plan": "芬太尼4μg/kg IV（插管前2分钟，高血压患者首选）；可联合依托咪酯或丙泊酚诱导；不推荐单独使用阿片类插管",
+    "evidence": "专家共识推荐；芬太尼预处理可缓解喉镜刺激引起的血流动力学波动，适合高血压及心血管疾病患者",
+    "risk_notes": "插管前评估气道；备好急救设备（面罩通气、声门上装置、环甲膜切开器械）；芬太尼可能诱发胸壁僵硬（\"木胸\"），需合用肌松药",
+    "outcome": "插管过程血压波动小，一次插管成功，患者顺利转入ICU机械通气"
+  },
+  {
+    "id": "CASE-A16",
+    "source": "阿片类药物急危重症专家共识2024",
+    "category": "急危重症",
+    "diagnosis": "ICU机械通气患者操作性疼痛（翻身、吸痰）",
+    "age": 58,
+    "gender": "男",
+    "pain_score": 5,
+    "pain_type": "非癌性急性疼痛",
+    "current_meds": [
+      "芬太尼",
+      "丙泊酚"
+    ],
+    "comorbidities": [
+      "COPD",
+      "重症肺炎"
+    ],
+    "substance_history": null,
+    "recommended_plan": "操作前芬太尼1μg/kg IV追加；吸痰前利多卡因气管内滴注（减少刺激）；CPOT量表评估镇痛效果",
+    "evidence": "专家共识推荐；ICU操作性疼痛是重症患者应激重要来源，预防性镇痛可减少不良反应",
+    "risk_notes": "使用CPOT或BPS量表评估无意识患者疼痛；避免镇痛不足（增加应激）和过度（延迟脱机）；每日唤醒评估神经功能",
+    "outcome": "翻身和吸痰操作中CPOT评分≤2，患者无明显躁动，顺利实施俯卧位通气"
+  },
+  {
+    "id": "CASE-A17",
+    "source": "阿片类药物急危重症专家共识2024",
+    "category": "急危重症",
+    "diagnosis": "急性腰痛（肌肉劳损/椎间盘源性）",
+    "age": 42,
+    "gender": "女",
+    "pain_score": 7,
+    "pain_type": "非癌性急性疼痛",
+    "current_meds": [],
+    "comorbidities": [],
+    "substance_history": null,
+    "recommended_plan": "NSAIDs首选（布洛芬/双氯芬酸）；肌松药（乙哌立松）；局部热敷；不推荐常规使用阿片类药物",
+    "evidence": "专家共识明确不推荐；急性腰痛阿片类效果不优于NSAIDs，但副作用和成瘾风险更高；国际指南一致推荐NSAIDs为一线",
+    "risk_notes": "阿片类治疗急性腰痛：不良反应多、成瘾风险高、无额外获益；若NSAIDs无效72小时后可考虑极短疗程低剂量弱阿片类",
+    "outcome": "NSAIDs联合肌松药治疗3天后VAS降至2分，患者恢复正常活动，无需阿片类药物"
+  },
+  {
+    "id": "CASE-A18",
+    "source": "阿片类药物急危重症专家共识2024",
+    "category": "急危重症",
+    "diagnosis": "胆石症伴急性胆绞痛",
+    "age": 50,
+    "gender": "女",
+    "pain_score": 8,
+    "pain_type": "非癌性急性疼痛",
+    "current_meds": [],
+    "comorbidities": [
+      "胆囊结石"
+    ],
+    "substance_history": null,
+    "recommended_plan": "NSAIDs（双氯芬酸75mg IM 或吲哚美辛栓）为首选；解痉药（丁溴东莨菪碱）；疼痛剧烈且NSAIDs无效时可使用哌替啶或曲马多",
+    "evidence": "专家共识不推荐常规阿片类；NSAIDs镇痛效果与吗啡相当但副作用更少；吗啡可能增加Oddi括约肌张力（不推荐）",
+    "risk_notes": "吗啡禁用（升高Oddi括约肌压力，可能加重症状）；哌替啶仅为备用方案；NSAIDs注意肾功能和出血风险",
+    "outcome": "NSAIDs治疗后1小时疼痛VAS降至2分，患者拒绝阿片类治疗，顺利过渡至腹腔镜胆囊切除术"
   }
 ]
