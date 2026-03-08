@@ -46,6 +46,68 @@ def load_cases():
             return json.load(f)
     return []
 
+
+# ─────────────────────────────────────────────
+# RAG：语义检索相关病例
+# ─────────────────────────────────────────────
+def cosine_similarity(a: list, b: list) -> float:
+    """纯Python余弦相似度（无需numpy）"""
+    if not a or not b:
+        return 0.0
+    dot = sum(x * y for x, y in zip(a, b))
+    mag_a = sum(x * x for x in a) ** 0.5
+    mag_b = sum(x * x for x in b) ** 0.5
+    return dot / (mag_a * mag_b) if mag_a * mag_b > 0 else 0.0
+
+
+@st.cache_data(show_spinner=False)
+def get_case_embeddings(_client, cases_json: str) -> list:
+    """预计算所有病例的Embedding向量，启动后缓存"""
+    cases = json.loads(cases_json)
+    embeddings = []
+    for case in cases:
+        text = " ".join(filter(None, [
+            case.get("diagnosis", ""),
+            case.get("pain_type", ""),
+            case.get("category", ""),
+            case.get("risk_notes", "")
+        ]))
+        try:
+            resp = _client.embeddings.create(
+                model="text-embedding-v3",
+                input=text,
+                encoding_format="float"
+            )
+            embeddings.append(resp.data[0].embedding)
+        except Exception:
+            embeddings.append(None)
+    return embeddings
+
+
+def retrieve_similar_cases(client, query: str, cases: list, top_k: int = 3):
+    """RAG检索：按语义相似度返回最相关的 top_k 个病例"""
+    if not cases:
+        return [], False
+    cases_json = json.dumps(cases, ensure_ascii=False, sort_keys=True)
+    case_embeddings = get_case_embeddings(client, cases_json)
+    try:
+        resp = client.embeddings.create(
+            model="text-embedding-v3",
+            input=query,
+            encoding_format="float"
+        )
+        query_emb = resp.data[0].embedding
+    except Exception:
+        return cases[:top_k], False  # 降级：直接返回前N条
+    scored = [
+        (cosine_similarity(query_emb, emb), case)
+        for emb, case in zip(case_embeddings, cases)
+        if emb is not None
+    ]
+    scored.sort(key=lambda x: x[0], reverse=True)
+    return [c for _, c in scored[:top_k]], True
+
+
 # ─────────────────────────────────────────────
 # ORT 评分计算
 # ─────────────────────────────────────────────
@@ -187,11 +249,20 @@ if page == "🏥 临床咨询（医生端）":
 ORT成瘾风险评分：{ort_score}分（{ort_level}）
 补充说明：{extra_notes or '无'}
 """
-            # 加载参考病例
+            # RAG 检索最相关病例
+            rag_query = f"{diagnosis} {pain_type} {comorbidities or ''} {department}"
+            similar_cases, rag_ok = retrieve_similar_cases(client, rag_query, cases, top_k=3)
             ref_cases_text = "\n".join([
-                f"[{c['id']}] {c['diagnosis']} → {c['recommended_plan']}"
-                for c in cases[:5]
+                f"[{c['id']}] {c['diagnosis']} ({c.get('pain_type','')}) → {c['recommended_plan']}"
+                for c in similar_cases
             ])
+
+            # 显示RAG检索到的参考病例
+            if similar_cases:
+                rag_label = "🔍 RAG检索" if rag_ok else "📋 参考病例（关键词匹配）"
+                with st.expander(f"{rag_label}：AI正在参考以下 {len(similar_cases)} 个相似病例", expanded=False):
+                    for c in similar_cases:
+                        st.markdown(f"- **[{c['id']}]** {c['diagnosis']} — {c.get('recommended_plan','')[:60]}...")
 
             tab1, tab2, tab3 = st.tabs(["💊 用药建议", "📚 证据溯源", "⚠️ 风险评估"])
 
