@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""阿片类药物辅助决策系统"""
+"""阿片类药物辅助决策系统（按设计初稿升级版）"""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
 
+import altair as alt
 import streamlit as st
 from openai import OpenAI
 
@@ -27,7 +28,7 @@ PRIMARY = "#165DFF"
 SUCCESS = "#00B42A"
 WARNING = "#FF7D00"
 DANGER = "#F53F3F"
-SIDEBAR_BG = "#2C3E50"
+SIDEBAR_BG = "#EAF3FF"
 
 
 NEWS_FEED = [
@@ -105,6 +106,15 @@ COURSE_MATRIX = [
     {"科室": "疼痛科", "课程": "慢性疼痛多学科协同", "重点": "心理共病、复评机制、联合治疗"},
 ]
 
+OPIOID_MME_FACTORS = {
+    "吗啡": 1.0,
+    "羟考酮": 1.5,
+    "氢吗啡酮": 4.0,
+    "曲马多": 0.1,
+    "可待因": 0.15,
+    "芬太尼贴剂": 2.4,  # mcg/h × 2.4 = MME/day
+}
+
 
 def seed_patients() -> List[Dict]:
     now = datetime.now()
@@ -160,16 +170,13 @@ def inject_css() -> None:
         }}
         [data-testid="stSidebar"] {{
             background: var(--sidebar-bg);
-            color: #fff;
+            color: #1f3556;
         }}
         [data-testid="stSidebar"] .stRadio label,
-        [data-testid="stSidebar"] .stRadio label p,
-        [data-testid="stSidebar"] [data-testid="stRadio"] label p,
-        [data-testid="stSidebar"] [data-testid="stRadio"] p,
         [data-testid="stSidebar"] .stMarkdown,
         [data-testid="stSidebar"] .stCaption,
         [data-testid="stSidebar"] .stText {{
-            color: #fff !important;
+            color: #1f3556 !important;
         }}
         .top-hero {{
             background: linear-gradient(120deg, #1242c4 0%, #165dff 52%, #24b3ee 100%);
@@ -265,6 +272,7 @@ def init_state() -> None:
         "training_case": "",
         "training_history": [],
         "last_report": "",
+        "clinical_last_result": None,
         "policy_country": "中国",
         "policy_province": "全国",
         "patients": seed_patients(),
@@ -294,71 +302,6 @@ def get_client_and_model() -> Tuple[Optional[OpenAI], str]:
     if openai_key:
         return OpenAI(api_key=openai_key), "gpt-4o-mini"
     return None, ""
-
-
-SYSTEM_PROMPT_CLINICAL = """你是一名具备循证医学知识的阿片类药物临床决策辅助助手，基于WHO三阶梯镇痛原则、中国国家卫健委麻精药品处方规范及现行循证指南提供建议。
-
-输出必须包含以下五个板块：
-
-【1. 处方建议】
-- 首选药物及剂型（结合疼痛类型、持续时间、肝肾功能）
-- 起始剂量（以MME/day表示，初治患者从最低有效剂量开始，如口服吗啡即释5-10mg q4h）
-- 给药途径及频次
-- 阿片初治 vs 阿片耐受患者的区分处理原则
-
-【2. 备选方案】
-- 主方案存在禁忌或过敏时的替代药物
-- 非阿片辅助镇痛药建议（NSAIDs、加巴喷丁类、三环类抗抑郁药等）
-
-【3. 风险提示】
-- 呼吸抑制风险（高龄、COPD、联用苯二氮卓类须重点标注）
-- 药物相互作用（CYP3A4/CYP2D6代谢影响；可待因、曲马多在CYP2D6超快代谢者存在毒性风险）
-- 便秘预防（同步开具刺激性泻药，如番泻叶）
-- 肝肾功能异常时的剂量调整原则（如肾功能不全避免使用吗啡-6-葡萄糖醛酸代谢积累）
-
-【4. 合规提示】
-- 是否触发中国处方红线（高风险患者限量、二次审方要求）
-- 知情同意及病历留痕建议
-- 麻醉药品处方要求（品名、规格、用法用量须完整）
-
-【5. 复评计划】
-- 首次复评时间窗：低风险7天，中风险72h内，高风险24-72h内
-- 复评终点指标：疼痛NRS、镇静评分（RASS）、呼吸频率、依从性
-- 减量或停药节奏建议
-
-若存在严重禁忌（如未纠正的严重呼吸抑制、明确过敏），须在输出最前面单独标注警示。
-末尾附：本建议仅供临床参考，最终处方决策由执业医师负责。"""
-
-SYSTEM_PROMPT_TRAINING = """你是一名专业的阿片类药物临床教育评估专家。请从以下五个维度对学员方案逐条评估：
-
-【评估维度】
-1. 风险分层完整性（20分）：是否完成ORT评估并正确分级
-2. 剂量合理性（25分）：起始MME是否符合初治/耐受原则，是否考虑肝肾功能；初治患者建议≤30 MME/day
-3. 合规完整性（20分）：是否涉及知情同意、限量处方、二次审方要求
-4. 不良反应管理（15分）：是否包含便秘预防、呼吸监测、跌倒风险教育
-5. 复评计划（20分）：是否明确复评时间窗与终点指标
-
-【中美政策对比参考】
-- 中国：高风险患者须限量处方、知情同意留痕、72h内复评
-- 美国CDC指南：建议<50 MME/day为审慎区间，>90 MME/day时应主动评估纳洛酮处方需求
-
-【输出格式】
-- 各维度得分及简要理由（每项1-2句话）
-- 关键改进点（不超过3条，须具体可执行）
-- 总体评价（50字以内）"""
-
-SYSTEM_PROMPT_POLICY = """你是中国阿片类药物处方合规政策解读专家，熟悉以下核心法规：
-- 《麻醉药品和精神药品管理条例》（国务院令第442号）
-- 国家卫健委《麻醉药品、精神药品处方管理规定》
-- 国家药监局阿片类药物说明书及风险管理规范
-- 各省市医保对慢性疼痛用药的报销路径差异
-
-输出原则：
-- 分条列出可直接执行的合规操作步骤
-- 明确区分"全国通用要求"与"地区特定要求"
-- 涉及处方限量时，注明规格与数量上限
-- 法规存在地区差异或不确定性时，标注"建议核实当地最新规定"
-- 语言简洁，每条不超过两句话"""
 
 
 def ask_llm(client: Optional[OpenAI], model: str, system_prompt: str, user_prompt: str) -> str:
@@ -479,6 +422,87 @@ def get_patient_by_id(pid: str) -> Optional[Dict]:
     return None
 
 
+def parse_time_safe(value: str) -> datetime:
+    text = str(value).strip()
+    for fmt in ("%Y-%m-%d %H:%M", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(text, fmt)
+        except Exception:
+            continue
+    return datetime.max
+
+
+def render_tracking_curve(patient: Dict) -> None:
+    tracking = patient.get("tracking", [])
+    if not tracking:
+        st.info("暂无用药后追踪记录。")
+        return
+
+    points = []
+    for item in tracking:
+        t = parse_time_safe(item.get("time", ""))
+        if t == datetime.max:
+            continue
+        points.append({"time": t.strftime("%Y-%m-%d"), "metric": "疼痛评分", "value": float(item.get("pain", 0))})
+        points.append({"time": t.strftime("%Y-%m-%d"), "metric": "依从性", "value": float(item.get("adherence", 0))})
+
+    if points:
+        chart = (
+            alt.Chart(alt.Data(values=points))
+            .mark_line(point=True)
+            .encode(
+                x=alt.X("time:T", title="日期"),
+                y=alt.Y("value:Q", title="数值"),
+                color=alt.Color("metric:N", scale=alt.Scale(domain=["疼痛评分", "依从性"], range=[DANGER, PRIMARY])),
+                tooltip=["time:T", "metric:N", "value:Q"],
+            )
+            .properties(height=260)
+        )
+        st.altair_chart(chart, use_container_width=True)
+
+    rows = []
+    for item in tracking:
+        rows.append(
+            {
+                "日期": item.get("time", ""),
+                "疼痛评分": item.get("pain", ""),
+                "依从性": item.get("adherence", ""),
+                "不良反应": item.get("adverse", "无明显"),
+            }
+        )
+    st.dataframe(rows, use_container_width=True, hide_index=True)
+
+
+def render_followup_timeline(patient: Dict) -> None:
+    followups = patient.get("followups", [])
+    if not followups:
+        st.info("暂无随访计划。")
+        return
+
+    now = datetime.now()
+    sorted_items = sorted(followups, key=lambda x: parse_time_safe(x.get("time", "")))
+    for item in sorted_items:
+        due = parse_time_safe(item.get("time", ""))
+        status = item.get("status", "待完成")
+        if status == "待完成" and due != datetime.max and due < now:
+            status = "逾期"
+        if status == "已完成":
+            color = SUCCESS
+            icon = "✅"
+        elif status == "逾期":
+            color = DANGER
+            icon = "❌"
+        else:
+            color = WARNING
+            icon = "⏳"
+        st.markdown(
+            f"<div style='border-left:3px solid {color};padding-left:10px;margin:8px 0;'>"
+            f"<b>{icon} {item.get('time','')}</b> | 状态：<span style='color:{color};font-weight:700'>{status}</span><br/>"
+            f"<span style='color:#5b6b7e'>{item.get('note','')}</span></div>",
+            unsafe_allow_html=True,
+        )
+
+
 def local_plan(age: int, pain_score: int, ort_level: str, opioid_naive: bool, pain_type: str) -> List[Dict]:
     if pain_score <= 3:
         core = "优先非阿片药物，短期观察。"
@@ -523,6 +547,36 @@ def risk_radar_values(pain_score: int, ort_level: str, current_meds: str, comorb
         "呼吸抑制风险": [respiratory],
         "政策合规风险": [policy],
     }
+
+
+def calc_mme_day(drug: str, dose: float, freq_per_day: int) -> Tuple[float, str]:
+    if drug == "无" or dose <= 0:
+        return 0.0, "未选择阿片类拟开具药物"
+    if drug == "芬太尼贴剂":
+        mme = dose * OPIOID_MME_FACTORS["芬太尼贴剂"]
+        return round(mme, 1), "换算规则：芬太尼贴剂 MME/day = mcg/h × 2.4"
+    factor = OPIOID_MME_FACTORS.get(drug, 0.0)
+    if factor <= 0:
+        return 0.0, "未匹配到换算系数"
+    mme = dose * max(freq_per_day, 1) * factor
+    return round(mme, 1), f"换算规则：MME/day = 单次剂量 × 频次 × 系数({factor})"
+
+
+def render_radar_chart(radar: Dict[str, List[int]]) -> None:
+    categories = list(radar.keys())
+    points = [{"category": k, "value": (v[0] if isinstance(v, list) else v)} for k, v in radar.items()]
+    chart = (
+        alt.Chart(alt.Data(values=points))
+        .mark_line(point=True, interpolate="linear-closed", strokeWidth=2)
+        .encode(
+            theta=alt.Theta("category:N", sort=categories),
+            radius=alt.Radius("value:Q", scale=alt.Scale(domain=[0, 10])),
+            color=alt.value(PRIMARY),
+            tooltip=["category:N", "value:Q"],
+        )
+        .properties(width=360, height=320)
+    )
+    st.altair_chart(chart, use_container_width=True)
 
 
 def render_header() -> None:
@@ -640,33 +694,77 @@ def page_clinical_assistant(client: Optional[OpenAI], model: str, cases: List[Di
     st.caption("左侧病例录入工作台，右侧 AI 辅助建议看板（处方卡片 + 风险雷达 + 循证溯源 + 会诊讨论）。")
     left, right = st.columns([1.0, 1.15], gap="large")
     submitted = False
-
     with left:
         with st.form("clinical_form", clear_on_submit=False):
             a, b, c = st.columns(3)
             with a:
-                age = st.number_input("年龄", 1, 120, 58)
-                gender = st.selectbox("性别", ["男", "女"])
-                pain_score = st.slider("疼痛评分 NRS", 0, 10, 7)
+                patient_name = st.text_input("患者姓名", placeholder="如：张某", key="clinical_patient_name")
+                age = st.number_input("年龄", 1, 120, 58, key="clinical_age")
+                gender = st.selectbox("性别", ["男", "女"], key="clinical_gender")
+                pain_score = st.slider("疼痛评分 NRS", 0, 10, 7, key="clinical_pain_score")
             with b:
-                diagnosis = st.text_input("主要诊断", placeholder="如：晚期肿瘤骨转移痛")
-                pain_type = st.selectbox("疼痛类型", ["癌性疼痛", "非癌性急性疼痛", "非癌性慢性疼痛"])
-                department = st.selectbox("科室", ["肿瘤科", "疼痛科", "骨科", "急诊科", "麻醉科", "口腔科"])
+                diagnosis_template = st.selectbox(
+                    "主要诊断模板",
+                    ["晚期肿瘤骨转移痛", "术后急性疼痛", "慢性神经病理性疼痛", "急性创伤痛", "其他"],
+                    key="clinical_diag_template",
+                )
+                diagnosis_extra = st.text_input("诊断补充", placeholder="如：伴睡眠障碍", key="clinical_diag_extra")
+                pain_type = st.selectbox("疼痛类型", ["癌性疼痛", "非癌性急性疼痛", "非癌性慢性疼痛"], key="clinical_pain_type")
+                department = st.selectbox("科室", ["肿瘤科", "疼痛科", "骨科", "急诊科", "麻醉科", "口腔科"], key="clinical_dept")
             with c:
-                opioid_naive = st.checkbox("阿片初治患者", True)
-                renal_liver_issue = st.checkbox("肝肾功能异常", False)
-                allergy = st.text_input("过敏史", placeholder="如：吗啡过敏")
+                opioid_naive = st.checkbox("阿片初治患者", True, key="clinical_opioid_naive")
+                renal_liver_issue = st.checkbox("肝肾功能异常", False, key="clinical_renal_liver")
+                allergy = st.multiselect("过敏史", ["吗啡", "NSAIDs", "青霉素类", "无明确过敏"], key="clinical_allergy")
 
-            d1, d2 = st.columns(2)
+            st.markdown("##### 当前用药（结构化录入）")
+            d1, d2, d3 = st.columns(3)
             with d1:
-                current_meds = st.text_area("当前用药", placeholder="每行一个")
-                comorbidities = st.text_area("合并症", placeholder="如：COPD、睡眠呼吸暂停")
+                current_opioid = st.selectbox("当前阿片药物", ["无", "吗啡", "羟考酮", "氢吗啡酮", "芬太尼贴剂", "曲马多", "可待因"], key="clinical_current_opioid")
             with d2:
-                personal_use = st.selectbox("本人物质使用史", ["无", "酒精使用史", "非法药物使用史", "处方药滥用史"])
-                family_use = st.selectbox("家族物质使用史", ["无", "家族酒精使用史", "家族非法药物使用史", "家族处方药滥用史"])
-                psych_histories = st.multiselect("心理/精神病史", ["抑郁", "ADHD", "双相障碍", "精神分裂谱系障碍"])
-                extra_notes = st.text_area("补充说明")
+                current_dose = st.number_input("当前单次剂量", 0.0, 500.0, 0.0, 0.5, key="clinical_current_dose")
+            with d3:
+                current_freq = st.selectbox("当前给药频次", ["qd", "bid", "tid", "qid", "q4h", "prn"], key="clinical_current_freq")
+
+            e1, e2 = st.columns(2)
+            with e1:
+                co_meds = st.multiselect("联合药物", ["对乙酰氨基酚", "布洛芬", "加巴喷丁", "苯二氮卓类", "止吐药", "通便药"], key="clinical_co_meds")
+                comorb_list = st.multiselect("合并症", ["COPD", "睡眠呼吸暂停", "慢性肾病", "肝功能异常", "高血压", "糖尿病"], key="clinical_comorb")
+            with e2:
+                adverse_hist = st.multiselect("既往不良反应", ["便秘", "恶心呕吐", "过度镇静", "呼吸抑制", "皮疹"], key="clinical_adverse_hist")
+                extra_notes = st.text_area("补充说明", key="clinical_extra_notes")
+
+            st.markdown("##### 拟开具方案（用于 MME 换算）")
+            p1, p2, p3 = st.columns(3)
+            with p1:
+                plan_drug = st.selectbox("拟开具阿片药物", ["无", "吗啡", "羟考酮", "氢吗啡酮", "芬太尼贴剂", "曲马多", "可待因"], key="clinical_plan_drug")
+            with p2:
+                dose_label = "剂量 (mcg/h)" if plan_drug == "芬太尼贴剂" else "单次剂量 (mg)"
+                plan_dose = st.number_input(dose_label, 0.0, 500.0, 0.0, 0.5, key="clinical_plan_dose")
+            with p3:
+                if plan_drug == "芬太尼贴剂":
+                    st.caption("贴剂默认按 24 小时持续给药计算")
+                    plan_freq_per_day = 1
+                else:
+                    plan_freq_per_day = st.slider("每日频次", 1, 6, 2, key="clinical_plan_freq")
+
+            personal_use = st.selectbox("本人物质使用史", ["无", "酒精使用史", "非法药物使用史", "处方药滥用史"], key="clinical_personal_use")
+            family_use = st.selectbox("家族物质使用史", ["无", "家族酒精使用史", "家族非法药物使用史", "家族处方药滥用史"], key="clinical_family_use")
+            psych_histories = st.multiselect("心理/精神病史", ["抑郁", "ADHD", "双相障碍", "精神分裂谱系障碍"], key="clinical_psych")
             submitted = st.form_submit_button("生成 AI 深度建议", type="primary", use_container_width=True)
+
+        diagnosis = diagnosis_template if diagnosis_template != "其他" else ""
+        if diagnosis_extra.strip():
+            diagnosis = f"{diagnosis}；{diagnosis_extra.strip()}" if diagnosis else diagnosis_extra.strip()
+        current_meds_text = (
+            f"{current_opioid} {current_dose} ({current_freq})"
+            if current_opioid != "无" and current_dose > 0
+            else "无阿片当前用药"
+        )
+        if co_meds:
+            current_meds_text += "；联合：" + "、".join(co_meds)
+        comorbidities = "、".join(comorb_list) if comorb_list else "无"
+        adverse_hist_text = "、".join(adverse_hist) if adverse_hist else "无"
+        allergy_text = "、".join(allergy) if allergy else "无"
 
         ort_score, ort_level, ort_details = calc_ort(age, personal_use, family_use, psych_histories)
         st.markdown(
@@ -674,9 +772,72 @@ def page_clinical_assistant(client: Optional[OpenAI], model: str, cases: List[Di
             unsafe_allow_html=True,
         )
         st.caption(" | ".join(ort_details) if ort_details else "未识别显著成瘾风险因子")
+        mme_day, mme_note = calc_mme_day(plan_drug, float(plan_dose), int(plan_freq_per_day))
+        st.caption(f"当前拟开具 MME/day：{mme_day} | {mme_note}")
+
         if submitted and not diagnosis.strip():
             st.warning("请先填写主要诊断。")
             submitted = False
+
+        if submitted:
+            query = f"{diagnosis} {pain_type} {department} {comorbidities}"
+            similar_cases = retrieve_similar_cases(query, cases, top_k=3)
+            local_cards = local_plan(age, pain_score, ort_level, opioid_naive, pain_type)
+            radar = risk_radar_values(pain_score, ort_level, current_meds_text, comorbidities)
+            summary = f"""
+患者：{patient_name or "未命名患者"}，{age} 岁 {gender}
+诊断：{diagnosis}
+疼痛评分：{pain_score}/10（{pain_type}）
+科室：{department}
+合并症：{comorbidities}
+当前用药：{current_meds_text}
+拟开具药物：{plan_drug}，剂量：{plan_dose}，频次：{plan_freq_per_day}/day，MME/day={mme_day}
+本人物质使用史：{personal_use}
+家族物质使用史：{family_use}
+心理病史：{", ".join(psych_histories) if psych_histories else "无"}
+ORT：{ort_score}（{ort_level}）
+过敏史：{allergy_text}
+既往不良反应：{adverse_hist_text}
+补充：{extra_notes or "无"}
+"""
+            ai_text = ask_llm(
+                client,
+                model,
+                "你是阿片类药物临床助手，请以结构化格式输出：处方建议、备选方案、风险提示、复评计划。",
+                summary,
+            )
+            st.session_state.clinical_last_result = {
+                "patient_name": patient_name or "未命名患者",
+                "age": age,
+                "gender": gender,
+                "diagnosis": diagnosis,
+                "pain_score": pain_score,
+                "pain_type": pain_type,
+                "department": department,
+                "comorbidities": comorbidities,
+                "current_meds_text": current_meds_text,
+                "plan_drug": plan_drug,
+                "plan_dose": float(plan_dose),
+                "plan_freq_per_day": int(plan_freq_per_day),
+                "mme_day": mme_day,
+                "mme_note": mme_note,
+                "ort_score": ort_score,
+                "ort_level": ort_level,
+                "allergy_text": allergy_text,
+                "adverse_hist_text": adverse_hist_text,
+                "summary": summary,
+                "local_cards": local_cards,
+                "radar": radar,
+                "similar_cases": similar_cases,
+                "ai_text": ai_text,
+                "renal_liver_issue": renal_liver_issue,
+            }
+
+    result = st.session_state.get("clinical_last_result")
+    required_keys = {"local_cards", "radar", "summary", "similar_cases", "ort_level", "ort_score", "mme_day"}
+    if result and not required_keys.issubset(set(result.keys())):
+        result = None
+        st.session_state.clinical_last_result = None
 
     with right:
         st.markdown("#### AI 计算状态实时回馈")
@@ -687,57 +848,38 @@ def page_clinical_assistant(client: Optional[OpenAI], model: str, cases: List[Di
                 st.write("3) 正在检索相似病例与循证依据...")
                 status.update(label="计算完成", state="complete")
 
-            query = f"{diagnosis} {pain_type} {department} {comorbidities}"
-            similar_cases = retrieve_similar_cases(query, cases, top_k=3)
-            local_cards = local_plan(age, pain_score, ort_level, opioid_naive, pain_type)
-            radar = risk_radar_values(pain_score, ort_level, current_meds, comorbidities)
-
-            summary = f"""
-患者：{age} 岁 {gender}
-诊断：{diagnosis}
-疼痛评分：{pain_score}/10（{pain_type}）
-科室：{department}
-合并症：{comorbidities or "无"}
-当前用药：{current_meds or "无"}
-本人物质使用史：{personal_use}
-家族物质使用史：{family_use}
-心理病史：{", ".join(psych_histories) if psych_histories else "无"}
-ORT：{ort_score}（{ort_level}）
-补充：{extra_notes or "无"}
-过敏史：{allergy or "无"}
-"""
-            ai_text = ask_llm(
-                client,
-                model,
-                SYSTEM_PROMPT_CLINICAL,
-                summary,
-            )
-
-            if ort_level == "高风险":
-                st.markdown("<div class='warn-bar'>⚠️ 高风险处方：建议 24-72h 复评 + 二次审方 + 知情同意留痕。</div>", unsafe_allow_html=True)
+        if result:
+            if result["ort_level"] == "高风险" or result["mme_day"] >= 90:
+                st.markdown("<div class='warn-bar'>⚠️ 红线预警：高风险或高剂量方案，建议 24-72h 复评 + 二次审方。</div>", unsafe_allow_html=True)
             else:
                 st.markdown("<div class='ok-bar'>✅ 风险可控：建议按计划复评并持续监测不良反应。</div>", unsafe_allow_html=True)
 
             tab1, tab2, tab3, tab4 = st.tabs(["处方卡片", "风险雷达", "循证溯源", "专家会诊讨论区"])
             with tab1:
-                st.table(local_cards)
-                if ai_text:
+                st.table(result["local_cards"])
+                if result["ai_text"]:
                     st.markdown("**AI 补充建议**")
-                    st.write(ai_text)
+                    st.write(result["ai_text"])
                 else:
                     st.info("未检测到 API Key，已展示本地规则建议。")
 
             with tab2:
-                st.caption("风险雷达（简化柱状图展示）")
-                st.bar_chart(radar)
-                if renal_liver_issue:
+                st.caption("风险雷达（极坐标）")
+                render_radar_chart(result["radar"])
+                st.metric("MME/day", result["mme_day"])
+                st.caption(result["mme_note"])
+                if result["mme_day"] >= 90:
+                    st.error("❌ 剂量红线：MME/day >= 90，需强制复核并记录调整依据。")
+                elif result["mme_day"] >= 50:
+                    st.warning("⚠️ 剂量警戒：MME/day >= 50，建议评估纳洛酮与高频复评。")
+                if result["renal_liver_issue"]:
                     st.error("存在肝肾功能异常：需减量并延长给药间隔。")
-                if "苯二氮卓" in current_meds:
+                if "苯二氮卓" in result["current_meds_text"]:
                     st.error("检测到联用高风险：阿片类 + 苯二氮卓。")
 
             with tab3:
                 st.markdown("**相似病例**")
-                for c in similar_cases:
+                for c in result["similar_cases"]:
                     st.markdown(f"- `{c.get('id','N/A')}` {c.get('diagnosis','')} | {c.get('recommended_plan','')}")
                 st.markdown("**权威链接**")
                 st.markdown("- [国家卫健委](https://www.nhc.gov.cn/)")
@@ -751,8 +893,8 @@ ORT：{ort_score}（{ort_level}）
                 st.markdown("- 药学部：需评估联用药相互作用，建议加入通便方案。")
                 st.markdown("- 护理组：建议增加夜间呼吸监测频次，完善患者教育。")
 
-            report = "【阿片类药物辅助决策报告】\n\n" + summary
-            report += "\n【处方卡片】\n" + "\n".join([f"- {i['字段']}：{i['内容']}" for i in local_cards])
+            report = "【阿片类药物辅助决策报告】\n\n" + result["summary"]
+            report += "\n【处方卡片】\n" + "\n".join([f"- {i['字段']}：{i['内容']}" for i in result["local_cards"]])
             report += "\n\n【会诊建议】\n- 疼痛科/药学部/护理组联合复评\n"
             st.session_state.last_report = report
             st.download_button(
@@ -762,6 +904,58 @@ ORT：{ort_score}（{ort_level}）
                 mime="text/plain",
                 use_container_width=True,
             )
+
+            st.markdown("#### 一键写入患者库与随访计划")
+            targets = ["新建患者"] + [f"{p['id']} | {mask_name(p['name'])} | {p['diagnosis']}" for p in st.session_state.patients]
+            t1, t2 = st.columns([2, 1])
+            with t1:
+                target = st.selectbox("写入目标", targets, key="clinical_write_target")
+            with t2:
+                follow_hours = st.selectbox("自动随访节点", [24, 48, 72, 168], format_func=lambda x: f"{x} 小时后", key="clinical_follow_hours")
+
+            if st.button("写入评估与随访", type="primary", use_container_width=True):
+                if target == "新建患者":
+                    pid = f"PT-{uuid.uuid4().hex[:6].upper()}"
+                    patient = {
+                        "id": pid,
+                        "name": result["patient_name"],
+                        "diagnosis": result["diagnosis"],
+                        "department": result["department"],
+                        "risk_level": result["ort_level"],
+                        "med_status": "待随访",
+                        "created_at": datetime.now().strftime("%Y-%m-%d"),
+                        "evaluations": [],
+                        "tracking": [],
+                        "followups": [],
+                    }
+                    st.session_state.patients.append(patient)
+                else:
+                    pid = target.split("|")[0].strip()
+                    patient = get_patient_by_id(pid)
+                    if not patient:
+                        st.error("目标患者不存在，请重试。")
+                        return
+
+                eval_text = (
+                    f"ORT {result['ort_score']} 分（{result['ort_level']}），"
+                    f"MME/day={result['mme_day']}，拟开具：{result['plan_drug']} {result['plan_dose']} × {result['plan_freq_per_day']}/day。"
+                )
+                patient["risk_level"] = result["ort_level"]
+                patient["med_status"] = "待随访"
+                patient["evaluations"].append(
+                    {"time": datetime.now().strftime("%Y-%m-%d %H:%M"), "report": eval_text, "details": [result["summary"]]}
+                )
+                patient["tracking"].append(
+                    {
+                        "time": datetime.now().strftime("%Y-%m-%d"),
+                        "pain": result["pain_score"],
+                        "adverse": result["adverse_hist_text"] or "无明显",
+                        "adherence": 0,
+                    }
+                )
+                due = (datetime.now() + timedelta(hours=int(follow_hours))).strftime("%Y-%m-%d %H:%M")
+                patient["followups"].append({"time": due, "status": "待完成", "note": "临床辅助自动创建复评"})
+                st.success(f"已写入患者库：{patient['id']}，并创建 {follow_hours} 小时后随访任务。")
         else:
             st.info("提交病例后，这里将显示结构化建议看板。")
 
@@ -884,7 +1078,7 @@ def page_training(client: Optional[OpenAI], model: str, cases: List[Dict]) -> No
     feedback = ask_llm(
         client,
         model,
-        SYSTEM_PROMPT_TRAINING,
+        "你是医学教育评估助手，请对学生处方方案给出针对性改进建议。",
         f"病例：{case['text']}\n方案：{plan}\n政策视角：{country}\nMME/day：{mme_day}",
     )
     if feedback:
@@ -1009,7 +1203,7 @@ def page_policy(client: Optional[OpenAI], model: str) -> None:
                 ai_text = ask_llm(
                     client,
                     model,
-                    SYSTEM_PROMPT_POLICY,
+                    "你是政策解读助手，请输出简洁、可执行、分条的合规建议。",
                     f"地区：{province}\n视角：{st.session_state.policy_country}\n问题：{q}",
                 )
                 if ai_text:
@@ -1031,7 +1225,7 @@ def page_doctor_dashboard() -> None:
     top3.metric("待随访", str(sum(1 for p in st.session_state.patients for f in p["followups"] if f["status"] == "待完成")))
     top4.metric("今日异常预警", "2")
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["我的患者库", "用药前评估", "用药后追踪", "随访管理", "账号设置"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["我的患者库", "用药前评估", "用药后追踪", "随访管理", "账号设置", "患者详情页"])
     with tab1:
         st.markdown("#### 患者建档（极简表单）")
         with st.form("add_patient_form"):
@@ -1135,11 +1329,16 @@ def page_doctor_dashboard() -> None:
                 with c2:
                     adherence = st.slider("依从性(%)", 0, 100, 80)
                 with c3:
-                    adverse = st.text_input("不良反应", placeholder="如：便秘、恶心、嗜睡")
+                    adverse_opts = st.multiselect("不良反应", ["无明显", "便秘", "恶心呕吐", "嗜睡", "意识模糊", "呼吸抑制"])
+                    adverse_other = st.text_input("其他不良反应", placeholder="可选")
                 submit_track = st.form_submit_button("保存追踪记录", type="primary")
             if submit_track:
-                patient["tracking"].append({"time": datetime.now().strftime("%Y-%m-%d"), "pain": pain, "adverse": adverse or "无明显", "adherence": adherence})
-                if pain >= 8 or "呼吸" in adverse:
+                adverse_items = [x for x in adverse_opts if x != "无明显"]
+                if adverse_other.strip():
+                    adverse_items.append(adverse_other.strip())
+                adverse_text = "、".join(adverse_items) if adverse_items else "无明显"
+                patient["tracking"].append({"time": datetime.now().strftime("%Y-%m-%d"), "pain": pain, "adverse": adverse_text, "adherence": adherence})
+                if pain >= 8 or "呼吸抑制" in adverse_text or "意识模糊" in adverse_text:
                     st.markdown("<div class='warn-bar'>⚠️ 指标异常：建议立即复核方案并记录调整原因。</div>", unsafe_allow_html=True)
                 else:
                     st.success("追踪记录已保存。")
@@ -1155,7 +1354,7 @@ def page_doctor_dashboard() -> None:
         now = datetime.now()
         for p in st.session_state.patients:
             for item in p["followups"]:
-                due = datetime.strptime(item["time"], "%Y-%m-%d %H:%M")
+                due = parse_time_safe(item.get("time", ""))
                 overdue = due < now and item["status"] == "待完成"
                 todo.append({"患者": mask_name(p["name"]), "时间": item["time"], "状态": "逾期" if overdue else item["status"], "说明": item["note"]})
         st.dataframe(todo, use_container_width=True, hide_index=True)
@@ -1180,6 +1379,53 @@ def page_doctor_dashboard() -> None:
         st.checkbox("开启异常登录通知", value=True)
         st.checkbox("自动锁屏（15 分钟）", value=True)
         st.info("所有患者信息默认脱敏展示，操作日志可追溯。")
+
+    with tab6:
+        st.markdown("#### 患者详情页")
+        options = [f"{p['id']} | {mask_name(p['name'])} | {p['diagnosis']}" for p in st.session_state.patients]
+        selected = st.selectbox("选择患者", options, key="detail_select")
+        pid = selected.split("|")[0].strip()
+        patient = get_patient_by_id(pid)
+
+        if not patient:
+            st.warning("未找到患者。")
+            return
+
+        d1, d2, d3, d4 = st.columns(4)
+        d1.metric("患者ID", patient.get("id", ""))
+        d2.metric("风险等级", patient.get("risk_level", ""))
+        d3.metric("当前状态", patient.get("med_status", ""))
+        d4.metric("评估次数", str(len(patient.get("evaluations", []))))
+
+        st.caption(
+            f"患者：{mask_name(patient.get('name',''))} | 科室：{patient.get('department','')} | 诊断：{patient.get('diagnosis','')} | 建档：{patient.get('created_at','')}"
+        )
+
+        c1, c2 = st.columns([1, 1], gap="large")
+        with c1:
+            st.markdown("##### 评估历史")
+            evals = patient.get("evaluations", [])
+            if evals:
+                rows = []
+                for e in evals:
+                    rows.append({"时间": e.get("time", ""), "摘要": e.get("report", "")})
+                st.dataframe(rows, use_container_width=True, hide_index=True)
+                with st.expander("查看评估详情"):
+                    for i, e in enumerate(reversed(evals), start=1):
+                        st.markdown(f"**{i}. {e.get('time','')}**")
+                        st.write(e.get("report", ""))
+                        details = e.get("details", [])
+                        if details:
+                            st.caption(" | ".join([str(x) for x in details]))
+            else:
+                st.info("暂无评估历史。")
+
+        with c2:
+            st.markdown("##### 随访时间轴")
+            render_followup_timeline(patient)
+
+        st.markdown("##### 用药后追踪曲线")
+        render_tracking_curve(patient)
 
 
 def page_profile() -> None:
