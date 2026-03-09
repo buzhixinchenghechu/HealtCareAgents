@@ -163,6 +163,9 @@ def inject_css() -> None:
             color: #fff;
         }}
         [data-testid="stSidebar"] .stRadio label,
+        [data-testid="stSidebar"] .stRadio label p,
+        [data-testid="stSidebar"] [data-testid="stRadio"] label p,
+        [data-testid="stSidebar"] [data-testid="stRadio"] p,
         [data-testid="stSidebar"] .stMarkdown,
         [data-testid="stSidebar"] .stCaption,
         [data-testid="stSidebar"] .stText {{
