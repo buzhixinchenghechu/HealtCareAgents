@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""阿片类药物辅助决策系统（按设计初稿升级版）"""
+"""阿片类药物辅助决策系统"""
 
 from __future__ import annotations
 
