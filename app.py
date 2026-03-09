@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""阿片类药物辅助决策系统"""
+"""阿片类药物辅助决策系统（按设计初稿升级版）"""
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ import random
 import re
 import uuid
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
 import altair as alt
 import streamlit as st
@@ -31,89 +32,110 @@ DANGER = "#F53F3F"
 SIDEBAR_BG = "#EAF3FF"
 
 
-NEWS_FEED = [
-    {
-        "date": "2026-03-07",
-        "title": "高风险患者复评窗口收紧",
-        "summary": "住院及门诊高风险患者建议 72 小时内完成首次复评并记录疗效终点。",
-    },
-    {
-        "date": "2026-03-03",
-        "title": "阿片类药物联合用药红线更新",
-        "summary": "新增阿片类 + 镇静催眠类联用二次审方提示规则，触发自动预警条。",
-    },
-    {
-        "date": "2026-02-28",
-        "title": "虚拟训练新增心理画像反馈机制",
-        "summary": "系统可根据训练行为自动标注“恐惧型/放开型/咨询依赖型”并推送微课。",
-    },
-]
+BASE_DIR = Path(__file__).resolve().parent
+STATIC_CONTENT_PATH = BASE_DIR / "data" / "static_content.json"
 
 
-POLICY_LIBRARY = [
-    {
-        "id": "POL-2026-CN-001",
-        "title": "门诊麻精药品处方与复评规范（2026）",
-        "authority": "国家卫健相关规范（院内拆解版）",
-        "date": "2026-03-01",
-        "category": "处方合规",
-        "tags": ["红线", "复评", "门诊"],
-        "province": "全国",
-        "summary": "高风险患者处方须限量并建立 72 小时-7 天复评计划，病历应记录知情同意与依从性评估。",
-        "qa": [
-            ("是否可以一次性开长疗程？", "❌ 高风险人群不建议一次性长疗程开具。"),
-            ("是否必须记录知情同意？", "✅ 是，建议使用标准化知情同意模板并留痕。"),
-        ],
-        "source_url": "https://www.nhc.gov.cn/",
-    },
-    {
-        "id": "POL-2026-CN-002",
-        "title": "阿片类药物联合用药风险审查要点",
-        "authority": "国家药监相关要求（院内风险清单）",
-        "date": "2026-02-20",
-        "category": "风险预警",
-        "tags": ["联用", "不良反应"],
-        "province": "全国",
-        "summary": "与苯二氮卓类、酒精、镇静药联用需标注高风险，建议增加监测频率和复评节点。",
-        "qa": [
-            ("联用是否绝对禁忌？", "⚠️ 需严格评估获益/风险，并进行高频监测与短期复评。"),
-            ("出现过度镇静怎么办？", "❌ 需立即评估减量或停药并记录处置过程。"),
-        ],
-        "source_url": "https://www.nmpa.gov.cn/",
-    },
-    {
-        "id": "POL-2026-CN-003",
-        "title": "省级医保对慢性疼痛门诊支付差异提示",
-        "authority": "国家医保局及地方医保政策汇编",
-        "date": "2026-02-11",
-        "category": "医保支付",
-        "tags": ["医保", "地方政策"],
-        "province": "上海",
-        "summary": "部分省市需满足阶段性试错及备案要求后才纳入长期治疗支付路径。",
-        "qa": [
-            ("是否直接纳入长期报销？", "⚠️ 视省份政策，需先完成短程评估与备案流程。"),
-            ("如何查询本地细则？", "✅ 通过省份切换器查看对应政策拆解与官方链接。"),
-        ],
-        "source_url": "https://www.nhsa.gov.cn/",
-    },
-]
+@st.cache_data
+def load_static_content() -> Dict[str, Any]:
+    defaults = {
+        "news_feed": [],
+        "policy_library": [],
+        "course_matrix": [],
+        "opioid_mme_factors": {},
+        "ui_options": {},
+    }
+    if not STATIC_CONTENT_PATH.exists():
+        return defaults
+
+    for encoding in ("utf-8", "gbk", "gb18030"):
+        try:
+            with open(STATIC_CONTENT_PATH, "r", encoding=encoding) as f:
+                data = json.load(f)
+            if not isinstance(data, dict):
+                continue
+
+            merged = defaults.copy()
+            for key, default_val in defaults.items():
+                val = data.get(key, default_val)
+                if isinstance(default_val, list) and isinstance(val, list):
+                    merged[key] = val
+                elif isinstance(default_val, dict) and isinstance(val, dict):
+                    merged[key] = val
+            return merged
+        except Exception:
+            continue
+
+    return defaults
 
 
-COURSE_MATRIX = [
-    {"科室": "肿瘤科", "课程": "晚期癌痛长期管理", "重点": "滴定策略、便秘预防、人道主义镇痛"},
-    {"科室": "骨科/口腔科", "课程": "术后急性疼痛短程处方", "重点": "短疗程管理、停药节奏、依从性"},
-    {"科室": "急诊科", "课程": "快速风险评估与极短程处方", "重点": "高风险识别、红线控制、转归记录"},
-    {"科室": "疼痛科", "课程": "慢性疼痛多学科协同", "重点": "心理共病、复评机制、联合治疗"},
-]
+_STATIC_CONTENT = load_static_content()
+NEWS_FEED = _STATIC_CONTENT["news_feed"]
+POLICY_LIBRARY = _STATIC_CONTENT["policy_library"]
+COURSE_MATRIX = _STATIC_CONTENT["course_matrix"]
+OPIOID_MME_FACTORS = _STATIC_CONTENT["opioid_mme_factors"]
 
-OPIOID_MME_FACTORS = {
-    "吗啡": 1.0,
-    "羟考酮": 1.5,
-    "氢吗啡酮": 4.0,
-    "曲马多": 0.1,
-    "可待因": 0.15,
-    "芬太尼贴剂": 2.4,  # mcg/h × 2.4 = MME/day
+REQUIRED_UI_OPTION_KEYS = {
+    "sidebar_pages",
+    "protected_pages",
+    "clinical_gender",
+    "clinical_diag_template",
+    "clinical_pain_type",
+    "clinical_dept",
+    "clinical_allergy",
+    "clinical_current_opioid",
+    "clinical_current_freq",
+    "clinical_co_meds",
+    "clinical_comorb",
+    "clinical_adverse_hist",
+    "clinical_plan_drug",
+    "clinical_personal_use",
+    "clinical_family_use",
+    "clinical_psych",
+    "clinical_follow_hours",
+    "training_difficulty",
+    "training_department",
+    "training_quiz_binary",
+    "training_policy_country",
+    "policy_category",
+    "policy_tag",
+    "policy_country",
+    "policy_province",
+    "policy_ort_level",
+    "doctor_add_department",
+    "doctor_add_risk_level",
+    "doctor_filter_risk",
+    "doctor_filter_status",
+    "doctor_eval_personal_use",
+    "doctor_eval_family_use",
+    "doctor_eval_psych",
+    "doctor_tracking_adverse",
+    "register_department",
 }
+
+
+def build_ui_options(raw_options: Any) -> Dict[str, List[Any]]:
+    raw = raw_options if isinstance(raw_options, dict) else {}
+    cleaned: Dict[str, List[Any]] = {}
+    for key, value in raw.items():
+        if isinstance(key, str) and isinstance(value, list) and value:
+            cleaned[key] = value
+
+    missing = sorted(k for k in REQUIRED_UI_OPTION_KEYS if k not in cleaned)
+    if missing:
+        missing_text = ", ".join(missing)
+        raise ValueError(f"ui_options ?????: {missing_text}")
+    return cleaned
+
+
+UI_OPTIONS = build_ui_options(_STATIC_CONTENT.get("ui_options", {}))
+
+
+def option_list(name: str) -> List[Any]:
+    options = UI_OPTIONS.get(name)
+    if not options:
+        raise KeyError(f"??? UI ??: {name}")
+    return options
 
 
 def seed_patients() -> List[Dict]:
@@ -265,7 +287,7 @@ def inject_css() -> None:
 
 def init_state() -> None:
     defaults = {
-        "current_page": "工作台总览",
+        "current_page": option_list("sidebar_pages")[0],
         "is_logged_in": False,
         "doctor_name": "未登录用户",
         "doctor_title": "请先登录",
@@ -273,8 +295,8 @@ def init_state() -> None:
         "training_history": [],
         "last_report": "",
         "clinical_last_result": None,
-        "policy_country": "中国",
-        "policy_province": "全国",
+        "policy_country": option_list("policy_country")[0],
+        "policy_province": option_list("policy_province")[0],
         "patients": seed_patients(),
         "psych_label_counts": {"恐惧型": 0, "均衡型": 0, "放开型": 0, "咨询依赖型": 0},
     }
@@ -329,8 +351,8 @@ def tokenize(text: str) -> set:
 
 @st.cache_data
 def load_cases() -> List[Dict]:
-    path = os.path.join("data", "cases", "sample_cases.json")
-    if not os.path.exists(path):
+    path = BASE_DIR / "data" / "cases" / "sample_cases.json"
+    if not path.exists():
         return []
     for encoding in ("utf-8", "gbk", "gb18030"):
         try:
@@ -593,7 +615,7 @@ def render_header() -> None:
 
 
 def sidebar_navigation() -> str:
-    pages = ["工作台总览", "临床辅助", "虚拟训练", "文献与政策库", "医生管理后台", "个人中心", "登录与安全"]
+    pages = option_list("sidebar_pages")
     with st.sidebar:
         st.markdown("## 智医助手")
         st.caption("Opioid Decision Support v2026")
@@ -700,43 +722,43 @@ def page_clinical_assistant(client: Optional[OpenAI], model: str, cases: List[Di
             with a:
                 patient_name = st.text_input("患者姓名", placeholder="如：张某", key="clinical_patient_name")
                 age = st.number_input("年龄", 1, 120, 58, key="clinical_age")
-                gender = st.selectbox("性别", ["男", "女"], key="clinical_gender")
+                gender = st.selectbox("性别", option_list("clinical_gender"), key="clinical_gender")
                 pain_score = st.slider("疼痛评分 NRS", 0, 10, 7, key="clinical_pain_score")
             with b:
                 diagnosis_template = st.selectbox(
                     "主要诊断模板",
-                    ["晚期肿瘤骨转移痛", "术后急性疼痛", "慢性神经病理性疼痛", "急性创伤痛", "其他"],
+                    option_list("clinical_diag_template"),
                     key="clinical_diag_template",
                 )
                 diagnosis_extra = st.text_input("诊断补充", placeholder="如：伴睡眠障碍", key="clinical_diag_extra")
-                pain_type = st.selectbox("疼痛类型", ["癌性疼痛", "非癌性急性疼痛", "非癌性慢性疼痛"], key="clinical_pain_type")
-                department = st.selectbox("科室", ["肿瘤科", "疼痛科", "骨科", "急诊科", "麻醉科", "口腔科"], key="clinical_dept")
+                pain_type = st.selectbox("疼痛类型", option_list("clinical_pain_type"), key="clinical_pain_type")
+                department = st.selectbox("科室", option_list("clinical_dept"), key="clinical_dept")
             with c:
                 opioid_naive = st.checkbox("阿片初治患者", True, key="clinical_opioid_naive")
                 renal_liver_issue = st.checkbox("肝肾功能异常", False, key="clinical_renal_liver")
-                allergy = st.multiselect("过敏史", ["吗啡", "NSAIDs", "青霉素类", "无明确过敏"], key="clinical_allergy")
+                allergy = st.multiselect("过敏史", option_list("clinical_allergy"), key="clinical_allergy")
 
             st.markdown("##### 当前用药（结构化录入）")
             d1, d2, d3 = st.columns(3)
             with d1:
-                current_opioid = st.selectbox("当前阿片药物", ["无", "吗啡", "羟考酮", "氢吗啡酮", "芬太尼贴剂", "曲马多", "可待因"], key="clinical_current_opioid")
+                current_opioid = st.selectbox("当前阿片药物", option_list("clinical_current_opioid"), key="clinical_current_opioid")
             with d2:
                 current_dose = st.number_input("当前单次剂量", 0.0, 500.0, 0.0, 0.5, key="clinical_current_dose")
             with d3:
-                current_freq = st.selectbox("当前给药频次", ["qd", "bid", "tid", "qid", "q4h", "prn"], key="clinical_current_freq")
+                current_freq = st.selectbox("当前给药频次", option_list("clinical_current_freq"), key="clinical_current_freq")
 
             e1, e2 = st.columns(2)
             with e1:
-                co_meds = st.multiselect("联合药物", ["对乙酰氨基酚", "布洛芬", "加巴喷丁", "苯二氮卓类", "止吐药", "通便药"], key="clinical_co_meds")
-                comorb_list = st.multiselect("合并症", ["COPD", "睡眠呼吸暂停", "慢性肾病", "肝功能异常", "高血压", "糖尿病"], key="clinical_comorb")
+                co_meds = st.multiselect("联合药物", option_list("clinical_co_meds"), key="clinical_co_meds")
+                comorb_list = st.multiselect("合并症", option_list("clinical_comorb"), key="clinical_comorb")
             with e2:
-                adverse_hist = st.multiselect("既往不良反应", ["便秘", "恶心呕吐", "过度镇静", "呼吸抑制", "皮疹"], key="clinical_adverse_hist")
+                adverse_hist = st.multiselect("既往不良反应", option_list("clinical_adverse_hist"), key="clinical_adverse_hist")
                 extra_notes = st.text_area("补充说明", key="clinical_extra_notes")
 
             st.markdown("##### 拟开具方案（用于 MME 换算）")
             p1, p2, p3 = st.columns(3)
             with p1:
-                plan_drug = st.selectbox("拟开具阿片药物", ["无", "吗啡", "羟考酮", "氢吗啡酮", "芬太尼贴剂", "曲马多", "可待因"], key="clinical_plan_drug")
+                plan_drug = st.selectbox("拟开具阿片药物", option_list("clinical_plan_drug"), key="clinical_plan_drug")
             with p2:
                 dose_label = "剂量 (mcg/h)" if plan_drug == "芬太尼贴剂" else "单次剂量 (mg)"
                 plan_dose = st.number_input(dose_label, 0.0, 500.0, 0.0, 0.5, key="clinical_plan_dose")
@@ -747,9 +769,9 @@ def page_clinical_assistant(client: Optional[OpenAI], model: str, cases: List[Di
                 else:
                     plan_freq_per_day = st.slider("每日频次", 1, 6, 2, key="clinical_plan_freq")
 
-            personal_use = st.selectbox("本人物质使用史", ["无", "酒精使用史", "非法药物使用史", "处方药滥用史"], key="clinical_personal_use")
-            family_use = st.selectbox("家族物质使用史", ["无", "家族酒精使用史", "家族非法药物使用史", "家族处方药滥用史"], key="clinical_family_use")
-            psych_histories = st.multiselect("心理/精神病史", ["抑郁", "ADHD", "双相障碍", "精神分裂谱系障碍"], key="clinical_psych")
+            personal_use = st.selectbox("本人物质使用史", option_list("clinical_personal_use"), key="clinical_personal_use")
+            family_use = st.selectbox("家族物质使用史", option_list("clinical_family_use"), key="clinical_family_use")
+            psych_histories = st.multiselect("心理/精神病史", option_list("clinical_psych"), key="clinical_psych")
             submitted = st.form_submit_button("生成 AI 深度建议", type="primary", use_container_width=True)
 
         diagnosis = diagnosis_template if diagnosis_template != "其他" else ""
@@ -911,7 +933,7 @@ ORT：{ort_score}（{ort_level}）
             with t1:
                 target = st.selectbox("写入目标", targets, key="clinical_write_target")
             with t2:
-                follow_hours = st.selectbox("自动随访节点", [24, 48, 72, 168], format_func=lambda x: f"{x} 小时后", key="clinical_follow_hours")
+                follow_hours = st.selectbox("自动随访节点", option_list("clinical_follow_hours"), format_func=lambda x: f"{x} 小时后", key="clinical_follow_hours")
 
             if st.button("写入评估与随访", type="primary", use_container_width=True):
                 if target == "新建患者":
@@ -1005,9 +1027,9 @@ def page_training(client: Optional[OpenAI], model: str, cases: List[Dict]) -> No
     st.caption("模块化训练：病例推演 + 动态问答 + 中美政策双轨解析 + AI 心理画像 + 课程矩阵。")
     a, b, c = st.columns(3)
     with a:
-        difficulty = st.selectbox("难度", ["初级", "中级", "高级"])
+        difficulty = st.selectbox("难度", option_list("training_difficulty"))
     with b:
-        dept = st.selectbox("训练科室", ["肿瘤科", "骨科/口腔科", "急诊科", "疼痛科"])
+        dept = st.selectbox("训练科室", option_list("training_department"))
     with c:
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("生成高保真虚拟病例", type="primary", use_container_width=True):
@@ -1024,13 +1046,13 @@ def page_training(client: Optional[OpenAI], model: str, cases: List[Dict]) -> No
     st.markdown("#### 动态问答判断题")
     answer_map = {}
     for idx, item in enumerate(case["questions"], start=1):
-        answer_map[idx] = st.radio(item["q"], ["是", "否"], index=0, key=f"quiz_{idx}")
+        answer_map[idx] = st.radio(item["q"], option_list("training_quiz_binary"), index=0, key=f"quiz_{idx}")
 
     with st.form("training_submit"):
         mme_day = st.slider("你建议的初始 MME/day（模拟）", 5, 120, 30)
         ask_help = st.checkbox("我希望调用 AI 咨询辅助后再定稿")
         plan = st.text_area("你的处方方案", height=170, placeholder="请写明药物、剂量、复评、合规与不良反应管理")
-        country = st.selectbox("政策视角", ["中国", "美国"])
+        country = st.selectbox("政策视角", option_list("training_policy_country"))
         submitted = st.form_submit_button("提交训练结果", type="primary", use_container_width=True)
 
     if not submitted:
@@ -1132,19 +1154,22 @@ def page_policy(client: Optional[OpenAI], model: str) -> None:
         keyword = st.text_input("政策/文献搜索（支持自然语言）", placeholder="例如：癌痛吗啡用量上限")
         c1, c2, c3 = st.columns(3)
         with c1:
-            category = st.selectbox("分类", ["全部", "处方合规", "风险预警", "医保支付"])
+            category = st.selectbox("分类", option_list("policy_category"))
         with c2:
-            tag = st.selectbox("标签", ["全部", "红线", "复评", "联用", "医保", "门诊"])
+            tag = st.selectbox("标签", option_list("policy_tag"))
         with c3:
-            country = st.selectbox("视角", ["中国", "美国"])
+            country = st.selectbox("视角", option_list("policy_country"))
             st.session_state.policy_country = country
 
         policies = POLICY_LIBRARY
-        if st.session_state.policy_province != "全国":
-            policies = [p for p in policies if p["province"] in ("全国", st.session_state.policy_province)]
-        if category != "全部":
+        default_province = option_list("policy_province")[0]
+        all_category = option_list("policy_category")[0]
+        all_tag = option_list("policy_tag")[0]
+        if st.session_state.policy_province != default_province:
+            policies = [p for p in policies if p["province"] in (default_province, st.session_state.policy_province)]
+        if category != all_category:
             policies = [p for p in policies if p["category"] == category]
-        if tag != "全部":
+        if tag != all_tag:
             policies = [p for p in policies if tag in p["tags"]]
         if keyword.strip():
             k = normalize_text(keyword)
@@ -1179,11 +1204,11 @@ def page_policy(client: Optional[OpenAI], model: str) -> None:
 
     with right:
         st.markdown("#### 省份选择器")
-        province = st.selectbox("地区", ["全国", "上海", "广东", "北京", "浙江"])
+        province = st.selectbox("地区", option_list("policy_province"))
         st.session_state.policy_province = province
         st.markdown("#### AI 实时合规提示")
         dose = st.slider("拟开具 MME/day", 5, 120, 30)
-        ort_level = st.selectbox("风险分层", ["低风险", "中风险", "高风险"])
+        ort_level = st.selectbox("风险分层", option_list("policy_ort_level"))
         consent = st.checkbox("已完成知情同意")
 
         policy_tip = policy_dual_track(st.session_state.policy_country, dose, ort_level)
@@ -1235,9 +1260,9 @@ def page_doctor_dashboard() -> None:
             with c2:
                 pdiag = st.text_input("诊断")
             with c3:
-                pdept = st.selectbox("科室", ["肿瘤科", "疼痛科", "骨科", "急诊科", "麻醉科"])
+                pdept = st.selectbox("科室", option_list("doctor_add_department"))
             with c4:
-                prisk = st.selectbox("风险等级", ["低风险", "中风险", "高风险"])
+                prisk = st.selectbox("风险等级", option_list("doctor_add_risk_level"))
             add = st.form_submit_button("新建患者", type="primary")
         if add:
             if pname.strip() and pdiag.strip():
@@ -1262,15 +1287,17 @@ def page_doctor_dashboard() -> None:
         st.markdown("#### 分类筛选")
         f1, f2 = st.columns(2)
         with f1:
-            risk_filter = st.selectbox("风险筛选", ["全部", "低风险", "中风险", "高风险"])
+            risk_filter = st.selectbox("风险筛选", option_list("doctor_filter_risk"))
         with f2:
-            status_filter = st.selectbox("状态筛选", ["全部", "待评估", "用药中", "待随访"])
+            status_filter = st.selectbox("状态筛选", option_list("doctor_filter_status"))
 
         rows = []
+        all_risk = option_list("doctor_filter_risk")[0]
+        all_status = option_list("doctor_filter_status")[0]
         for p in st.session_state.patients:
-            if risk_filter != "全部" and p["risk_level"] != risk_filter:
+            if risk_filter != all_risk and p["risk_level"] != risk_filter:
                 continue
-            if status_filter != "全部" and p["med_status"] != status_filter:
+            if status_filter != all_status and p["med_status"] != status_filter:
                 continue
             rows.append({"患者": mask_name(p["name"]), "ID": p["id"], "诊断": p["diagnosis"], "科室": p["department"], "风险": p["risk_level"], "状态": p["med_status"], "建档日期": p["created_at"]})
         st.dataframe(rows, use_container_width=True, hide_index=True)
@@ -1287,10 +1314,10 @@ def page_doctor_dashboard() -> None:
                 c1, c2, c3 = st.columns(3)
                 with c1:
                     age = st.number_input("年龄", 1, 120, 56)
-                    personal_use = st.selectbox("本人物质使用史", ["无", "酒精使用史", "非法药物使用史", "处方药滥用史"])
+                    personal_use = st.selectbox("本人物质使用史", option_list("doctor_eval_personal_use"))
                 with c2:
-                    family_use = st.selectbox("家族物质使用史", ["无", "家族酒精使用史", "家族非法药物使用史", "家族处方药滥用史"])
-                    psych = st.multiselect("心理病史", ["抑郁", "ADHD", "双相障碍", "精神分裂谱系障碍"])
+                    family_use = st.selectbox("家族物质使用史", option_list("doctor_eval_family_use"))
+                    psych = st.multiselect("心理病史", option_list("doctor_eval_psych"))
                 with c3:
                     policy_risk = st.checkbox("存在政策红线风险")
                     clinical_risk = st.checkbox("存在临床高危联用")
@@ -1329,14 +1356,15 @@ def page_doctor_dashboard() -> None:
                 with c2:
                     adherence = st.slider("依从性(%)", 0, 100, 80)
                 with c3:
-                    adverse_opts = st.multiselect("不良反应", ["无明显", "便秘", "恶心呕吐", "嗜睡", "意识模糊", "呼吸抑制"])
+                    adverse_opts = st.multiselect("不良反应", option_list("doctor_tracking_adverse"))
                     adverse_other = st.text_input("其他不良反应", placeholder="可选")
                 submit_track = st.form_submit_button("保存追踪记录", type="primary")
             if submit_track:
-                adverse_items = [x for x in adverse_opts if x != "无明显"]
+                no_obvious_adverse = option_list("doctor_tracking_adverse")[0]
+                adverse_items = [x for x in adverse_opts if x != no_obvious_adverse]
                 if adverse_other.strip():
                     adverse_items.append(adverse_other.strip())
-                adverse_text = "、".join(adverse_items) if adverse_items else "无明显"
+                adverse_text = "、".join(adverse_items) if adverse_items else no_obvious_adverse
                 patient["tracking"].append({"time": datetime.now().strftime("%Y-%m-%d"), "pain": pain, "adverse": adverse_text, "adherence": adherence})
                 if pain >= 8 or "呼吸抑制" in adverse_text or "意识模糊" in adverse_text:
                     st.markdown("<div class='warn-bar'>⚠️ 指标异常：建议立即复核方案并记录调整原因。</div>", unsafe_allow_html=True)
@@ -1499,7 +1527,7 @@ def page_login() -> None:
             with c1:
                 license_id = st.text_input("执业医师证号")
                 real_name = st.text_input("姓名")
-                dept = st.selectbox("科室", ["肿瘤科", "疼痛科", "骨科", "急诊科", "麻醉科"])
+                dept = st.selectbox("科室", option_list("register_department"))
             with c2:
                 hospital = st.text_input("医院")
                 mobile = st.text_input("手机号", key="reg_mobile")
@@ -1525,7 +1553,7 @@ def main() -> None:
     render_header()
     page = sidebar_navigation()
 
-    protected = {"临床辅助", "虚拟训练", "医生管理后台", "个人中心"}
+    protected = set(option_list("protected_pages"))
     if not st.session_state.is_logged_in and page in protected:
         st.warning("当前未登录，请先进入“登录与安全”完成认证，或启用体验模式。")
         if st.button("启用体验模式", type="primary"):
