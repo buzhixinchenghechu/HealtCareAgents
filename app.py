@@ -1121,7 +1121,6 @@ def page_policy(client: Optional[OpenAI], model: str) -> None:
             st.link_button(
                 "查看官方来源",
                 item.get("source_url", "https://www.nhc.gov.cn/"),
-                key=f"policy_link_{idx}_{item.get('id', 'unknown')}",
             )
 
     st.markdown("#### 政策问答")
