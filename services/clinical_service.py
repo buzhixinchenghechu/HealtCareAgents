@@ -69,8 +69,31 @@ def risk_tag_class(level: str) -> str:
         return "risk-mid"
     return "risk-high"
 
-def local_plan(age: int, pain_score: int, ort_level: str, opioid_naive: bool, pain_type: str) -> List[Dict]:
-    if pain_score <= 3:
+def local_plan(age: int, pain_score: int, ort_level: str, opioid_naive: bool, pain_type: str, diagnosis: str = "") -> List[Dict]:
+    diag = diagnosis.lower()
+
+    # 诊断特异性规则（优先于通用评分规则）
+    if any(k in diag for k in ["胰腺炎", "胰腺"]):
+        core = "急性胰腺炎镇痛：禁用吗啡/哌替啶（升高Oddi括约肌压力），首选氢吗啡酮或芬太尼。"
+        drug = "氢吗啡酮注射液（首选）；备选：芬太尼PCA"
+        dose = "氢吗啡酮 0.2-0.6mg IV q4h；芬太尼 25-50μg IV prn"
+    elif any(k in diag for k in ["颅脑创伤", "颅脑损伤", "脑外伤", "tbi"]):
+        core = "颅脑创伤镇痛：首选芬太尼（颅内压影响小），避免使用吗啡。"
+        drug = "芬太尼注射液（首选）；备选：氢吗啡酮"
+        dose = "芬太尼 25-50μg IV prn 或持续泵注，密切监测镇静深度"
+    elif any(k in diag for k in ["主动脉夹层", "夹层"]):
+        core = "主动脉夹层：镇痛镇静并重，吗啡首选，同步降压治疗。"
+        drug = "吗啡注射液"
+        dose = "吗啡 5-10mg IV 缓慢注射，监测血压及呼吸"
+    elif any(k in diag for k in ["acs", "急性冠脉", "心肌梗死", "心梗"]):
+        core = "ACS镇痛：吗啡可缓解疼痛和焦虑，确认无禁忌后使用。"
+        drug = "吗啡注射液"
+        dose = "吗啡 5-10mg IV，每5-15min可重复，总量不超过15mg"
+    elif any(k in diag for k in ["烧伤"]):
+        core = "烧伤镇痛：强阿片为主，注意大面积烧伤时药物吸收改变。"
+        drug = "吗啡或氢吗啡酮注射液"
+        dose = "按体重和烧伤面积调整，建议PCA模式"
+    elif pain_score <= 3:
         core = "优先非阿片药物，短期观察。"
         drug = "对乙酰氨基酚/NSAIDs"
         dose = "按说明书常规剂量"
