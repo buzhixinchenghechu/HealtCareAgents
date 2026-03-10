@@ -134,7 +134,7 @@ def page_clinical_assistant(
         if submitted:
             query = f"{diagnosis} {pain_type} {department} {comorbidities}"
             similar_cases = retrieve_similar_cases(query, cases, top_k=3)
-            local_cards = local_plan(age, pain_score, ort_level, opioid_naive, pain_type)
+            local_cards = local_plan(age, pain_score, ort_level, opioid_naive, pain_type, diagnosis)
             radar = risk_radar_values(pain_score, ort_level, current_meds_text, comorbidities)
             summary = f"""
 患者：{patient_name or "未命名患者"}，{age} 岁 {gender}
