@@ -1,84 +1,156 @@
+# -*- coding: utf-8 -*-
+"""HealthCareAgents 应用入口与页面路由。"""
+
 from __future__ import annotations
 
-from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
 
 import streamlit as st
 
-from repositories.session_repository import get_audit_events, get_patients, get_training_history
-from schemas.metrics import ProfileMetrics
-from services.metrics_service import compute_profile_metrics
+from pages.clinical_page import page_clinical_assistant
+from pages.dashboard_page import page_dashboard
+from pages.doctor_page import page_doctor_dashboard
+from pages.layout_page import inject_css, render_footer_note, render_header, sidebar_navigation
+from pages.login_page import page_login
+from pages.policy_page import page_policy
+from pages.profile_center_page import page_profile
+from pages.training_page import page_training
+from repositories.content_repository import load_cases, load_static_content
+from repositories.session_repository import initialize_persistent_state
+from services.llm_service import get_client_and_model
+from services.state_service import init_state
 
 
-def _clean_text(value: object, fallback: str) -> str:
-    text = str(value).strip() if value is not None else ""
-    if not text:
-        return fallback
-    if set(text) <= {"?"}:
-        return fallback
-    return text
+st.set_page_config(
+    page_title="HealthCareAgents",
+    page_icon=":hospital:",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
 
-def render_profile_metrics(metrics: ProfileMetrics) -> None:
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("本周辅助决策", str(metrics.weekly_decisions))
-
-    completion_rate_text = f"{metrics.high_risk_followup_completion_rate * 100:.1f}%"
-    c2.metric("高风险复评完成率", completion_rate_text)
-    c2.caption(f"已完成 {metrics.completed_high_risk_followups} / 应完成 {metrics.due_high_risk_followups}")
-
-    c3.metric("训练场均得分", f"{metrics.training_avg_score:.1f}")
-    c4.metric("今日异常预警", str(metrics.today_alerts))
+PRIMARY = "#165DFF"
+SUCCESS = "#00B42A"
+WARNING = "#FF7D00"
+DANGER = "#F53F3F"
+SIDEBAR_BG = "#EAF3FF"
 
 
-def render_recent_audit(events: list[dict]) -> None:
-    st.markdown("#### 最近操作")
-    if not events:
-        st.info("暂无操作记录。")
-        return
-    st.dataframe(events[::-1][:20], use_container_width=True, hide_index=True)
+BASE_DIR = Path(__file__).resolve().parent
+STATIC_CONTENT_PATH = BASE_DIR / "data" / "static_content.json"
 
-def page_profile() -> None:
-    st.markdown("### 个人中心")
-    is_logged_in = bool(st.session_state.get("is_logged_in", False))
-    if not is_logged_in:
-        with st.container(border=True):
-            st.subheader("未登录用户")
-            st.caption("请先登录后查看个人中心详情。")
-            if st.button("去登录与安全", type="primary"):
-                st.session_state.current_page = "登录与安全"
-                st.rerun()
-        st.info("登录后可查看训练历史、审计记录和报告下载。")
-        return
 
-    patients = get_patients(st.session_state)
-    training_history = get_training_history(st.session_state)
-    metrics = compute_profile_metrics(patients, training_history)
-    doctor_name = _clean_text(st.session_state.get("doctor_name"), "临床医生")
-    doctor_title = _clean_text(st.session_state.get("doctor_title"), "医生")
+REQUIRED_UI_OPTION_KEYS = {
+    "sidebar_pages",
+    "protected_pages",
+    "clinical_gender",
+    "clinical_diag_template",
+    "clinical_pain_type",
+    "clinical_dept",
+    "clinical_allergy",
+    "clinical_current_opioid",
+    "clinical_current_freq",
+    "clinical_co_meds",
+    "clinical_comorb",
+    "clinical_adverse_hist",
+    "clinical_plan_drug",
+    "clinical_personal_use",
+    "clinical_family_use",
+    "clinical_psych",
+    "clinical_follow_hours",
+    "training_difficulty",
+    "training_department",
+    "training_quiz_binary",
+    "training_policy_country",
+    "policy_category",
+    "policy_tag",
+    "policy_country",
+    "policy_province",
+    "policy_ort_level",
+    "doctor_add_department",
+    "doctor_add_risk_level",
+    "doctor_filter_risk",
+    "doctor_filter_status",
+    "doctor_eval_personal_use",
+    "doctor_eval_family_use",
+    "doctor_eval_psych",
+    "doctor_tracking_adverse",
+    "register_department",
+}
 
-    l, r = st.columns([1, 2])
-    with l:
-        with st.container(border=True):
-            st.subheader(doctor_name)
-            st.caption(doctor_title)
-            st.caption("机构：示例三甲医院")
-            st.caption("角色：麻醉疼痛管理组")
-            st.caption("执业编号：MD-2026-041")
-    with r:
-        render_profile_metrics(metrics)
 
-    st.markdown("#### 训练历史")
-    if training_history:
-        st.dataframe(training_history[::-1], use_container_width=True, hide_index=True)
+def build_ui_options(raw_options: Any) -> Dict[str, List[Any]]:
+    raw = raw_options if isinstance(raw_options, dict) else {}
+    cleaned: Dict[str, List[Any]] = {}
+    for key, value in raw.items():
+        if isinstance(key, str) and isinstance(value, list) and value:
+            cleaned[key] = value
+
+    missing = sorted(k for k in REQUIRED_UI_OPTION_KEYS if k not in cleaned)
+    if missing:
+        missing_text = ", ".join(missing)
+        raise ValueError(f"ui_options 缺少必要键: {missing_text}")
+    return cleaned
+
+
+_STATIC_CONTENT = load_static_content(STATIC_CONTENT_PATH)
+NEWS_FEED = _STATIC_CONTENT["news_feed"]
+POLICY_LIBRARY = _STATIC_CONTENT["policy_library"]
+COURSE_MATRIX = _STATIC_CONTENT["course_matrix"]
+OPIOID_MME_FACTORS = _STATIC_CONTENT["opioid_mme_factors"]
+UI_OPTIONS = build_ui_options(_STATIC_CONTENT.get("ui_options", {}))
+
+
+def option_list(name: str) -> List[Any]:
+    options = UI_OPTIONS.get(name)
+    if not options:
+        raise KeyError(f"未找到 UI 选项: {name}")
+    return options
+
+
+def main() -> None:
+    inject_css(PRIMARY, SUCCESS, WARNING, DANGER, SIDEBAR_BG)
+    init_state(st.session_state, option_list)
+    initialize_persistent_state(st.session_state)
+
+    client, model = get_client_and_model()
+    cases = load_cases(BASE_DIR)
+
+    render_header()
+    page = sidebar_navigation(option_list)
+
+    protected = set(option_list("protected_pages"))
+    if not st.session_state.is_logged_in and page in protected:
+        st.warning("当前页面需要登录后访问，请先完成登录认证。")
+        st.caption("登录后可使用临床辅助、虚拟训练、医生管理后台和个人中心。")
+        if st.button("前往登录与安全", type="primary"):
+            st.session_state.current_page = option_list("sidebar_pages")[-1]
+            st.rerun()
+        render_footer_note()
+        st.stop()
+
+    pages = option_list("sidebar_pages")
+    if st.session_state.current_page not in pages:
+        st.session_state.current_page = pages[0]
+        page = pages[0]
+    if page == pages[0]:
+        page_dashboard(cases, option_list, NEWS_FEED, POLICY_LIBRARY)
+    elif page == pages[1]:
+        page_clinical_assistant(client, model, cases, option_list, OPIOID_MME_FACTORS, PRIMARY)
+    elif page == pages[2]:
+        page_training(client, model, cases, option_list, COURSE_MATRIX)
+    elif page == pages[3]:
+        page_policy(client, model, option_list, POLICY_LIBRARY)
+    elif page == pages[4]:
+        page_doctor_dashboard(option_list, PRIMARY, SUCCESS, WARNING, DANGER)
+    elif page == pages[5]:
+        page_profile()
     else:
-        st.info("暂无训练记录。")
+        page_login(option_list)
 
-    render_recent_audit(get_audit_events(st.session_state))
+    render_footer_note()
 
-    if st.session_state.last_report:
-        st.download_button(
-            "下载最近一次会诊/训练报告",
-            data=st.session_state.last_report.encode("utf-8"),
-            file_name=f"last_report_{datetime.now().strftime('%Y%m%d')}.txt",
-            mime="text/plain",
-        )
+
+if __name__ == "__main__":
+    main()
