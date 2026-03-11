@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 
 from datetime import datetime
@@ -8,6 +7,15 @@ import streamlit as st
 from repositories.session_repository import get_audit_events, get_patients, get_training_history
 from schemas.metrics import ProfileMetrics
 from services.metrics_service import compute_profile_metrics
+
+
+def _clean_text(value: object, fallback: str) -> str:
+    text = str(value).strip() if value is not None else ""
+    if not text:
+        return fallback
+    if set(text) <= {"?"}:
+        return fallback
+    return text
 
 
 def render_profile_metrics(metrics: ProfileMetrics) -> None:
@@ -31,15 +39,28 @@ def render_recent_audit(events: list[dict]) -> None:
 
 def page_profile() -> None:
     st.markdown("### 个人中心")
+    is_logged_in = bool(st.session_state.get("is_logged_in", False))
+    if not is_logged_in:
+        with st.container(border=True):
+            st.subheader("未登录用户")
+            st.caption("请先登录后查看个人中心详情。")
+            if st.button("去登录与安全", type="primary"):
+                st.session_state.current_page = "登录与安全"
+                st.rerun()
+        st.info("登录后可查看训练历史、审计记录和报告下载。")
+        return
+
     patients = get_patients(st.session_state)
     training_history = get_training_history(st.session_state)
     metrics = compute_profile_metrics(patients, training_history)
+    doctor_name = _clean_text(st.session_state.get("doctor_name"), "临床医生")
+    doctor_title = _clean_text(st.session_state.get("doctor_title"), "医生")
 
     l, r = st.columns([1, 2])
     with l:
         with st.container(border=True):
-            st.subheader(st.session_state.doctor_name)
-            st.caption(st.session_state.doctor_title)
+            st.subheader(doctor_name)
+            st.caption(doctor_title)
             st.caption("机构：示例三甲医院")
             st.caption("角色：麻醉疼痛管理组")
             st.caption("执业编号：MD-2026-041")
