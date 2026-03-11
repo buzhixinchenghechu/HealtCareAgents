@@ -1,0 +1,539 @@
+=== 第1页 ===
+· 162 ·  
+中华急诊医学杂志 2024 年 2 月第 33 卷第 2 期 Chin J Emerg Med, February 2024, Vol. 33, No. 2  
+
+· 专家共识 ·  
+
+阿片类药物在急危重症中的应用专家共识  
+
+国家急诊专业质控中心 北京市急诊质量控制和改进中心 中国医疗保健国际交流  
+促进会急诊医学分会 中国医师协会急诊医师分会 中华医学会急诊医学分会  
+
+通信作者：朱华栋，北京协和医院急诊科，Email: huadongzhu@hotmail.com；刘业成，  
+北京协和医院急诊科，Email: ptcaliu@sina.com；张新超，北京医院急诊科，Email:  
+xinchaoz@163.com；于学忠，北京协和医院急诊科，Email: yxz@pumch.cn；赵晓东，  
+中国人民解放军总医院第四医学中心急诊科，Email: zxd63715@126.com；吕传柱，  
+四川省人民医院急诊科，Email: lvchuanzhu677@126.com  
+
+DOI: 10.3760/cma.j.issn.1671-0282.2024.02.005  
+
+疼痛是急诊患者最常见的主诉之一，在重症患者中更是  
+普遍存在，其来源包括原发疾病、创伤、烧伤、手术及各种  
+侵入性操作等。急诊医学的一项重要任务就是明确患者疼痛  
+的原因并减轻或缓解疼痛和不适。现有的镇痛治疗包括药物  
+和非药物方法，药物治疗又可分为阿片类和非阿片类药物，  
+其中阿片类药物起效快、作用强、没有封顶效应，在镇痛治  
+疗中占有非常重要的地位，是迄今治疗中重度急性疼痛最常  
+用的药物。然而，阿片类药物临床应用目前存在两方面的问题：其一，自 20 世纪 90 年代末以来，疼痛被作为“第五个  
+生命体征”加以评估和治疗广受重视，以至于阿片类药物滥  
+用和成瘾在西方国家尤其是美国成为了一场严重的危机；而  
+另一方面，在中国，医生需要有麻醉药品处方资质才能开具  
+阿片类药物，且由于很多医生担心其成瘾性，很少使用或仅  
+低剂量使用此类药物，导致患者的疼痛控制不足。  
+
+为科学、规范阿片类药物的使用，专家共识小组经  
+充分讨论、广泛征求意见，归纳了 20 余个具体临床问题，  
+检索了 PubMed、Cochrane Library、中国知网（CNKI）、  
+万方数据知识服务平台、维普资讯中文科技期刊数据库、  
+中国生物医学文献数据库（CBM）6 个数据库，基于循  
+证医学证据和 GRADE 方法，将研究文献的证据等级分  
+为三级（表 1），并组织 40 余位国内急诊医学、重症医学、  
+药理学、循证医学专家反复讨论，主要考虑证据质量（等  
+级）、可及性和政策支持等，形成了阿片类药物在急重症  
+中应用的推荐共识。按照专家推荐的程度，推荐意见的  
+强度分为“强推荐”“中推荐”和“弱推荐”。  
+
+**1 阿片类药物的作用机制、使用策略和使用途径**  
+
+**1.1 作用机制**  
+
+阿片类药物又称为阿片样物质 (opioids)，包括天然的  
+
+表 1 证据水平分级标准  
+
+| 证据水平 | 描述 |
+|----------|------|
+| 高水平证据 | 多个随机对照实验的荟萃分析或系统评价；随机对照实验 |
+| 中等水平证据 | 设计良好的非随机性病例对照研究；队列研究；观察性研究；横断面研究 |
+| 低水平证据 | 非随机性回顾性研究；病例报告；专家共识 |
+
+阿片生物碱或其半合成衍生物，能与中枢和外周的阿片类  
+受体结合并产生不同程度的激动效应，提供镇痛作用而不  
+失去触觉、本体感觉或意识。阿片类药物不会缓解或治疗  
+导致疼痛的原因，只是降低患者对于疼痛的感知。  
+
+阿片类镇痛药物的药理作用源自其与不同阿片类受体  
+的相互作用，而每种受体又有不同亚型，其中，最重要的  
+是 μ、δ、κ 三种受体。μ 受体激动时主要呈现出脊髓  
+以上水平的镇痛，但会出现呼吸抑制、内脏平滑肌张力增  
+高（表现为便秘、尿潴留）和痉挛（表现为 Oddis 括约肌  
+痉挛、咳嗽）、瞳孔收缩、欣快感及成瘾等不良反应。δ  
+受体的激动效应为脊髓水平的镇痛、不良反应和 μ 受体激  
+动类似。κ 受体也可提供脊髓水平的镇痛。目前急诊临床  
+常用的阿片类药物大多是通过激动 μ 受体发挥作用，如吗  
+啡、芬太尼、瑞芬太尼、舒芬太尼、哌替啶等，而喷他佐辛、  
+布托啡诺和纳布啡则主要作用于 κ 受体，另外，羟考酮也  
+可作用于 κ 受体。  
+
+阿片类药物的镇痛作用被认为没有封顶效应，理论上  
+只要患者耐受，可以一直增加剂量直至达到镇痛目标。  
+
+**1.2 使用策略**  
+
+**推荐意见 1**：使用三阶梯的阿片类药物最小化镇痛策  
+略，并采用逐步升级的多模式镇痛方法。（证据水平高，强  
+推荐）  
+
+世界卫生组织的三阶梯镇痛策略建议[1]，疼痛治疗  
+应从非阿片类药物开始，使用扑热息痛和非甾体抗炎药
+
+=== 第2页 ===
+中华急诊医学杂志 2024 年 2 月第 33 卷第 2 期 Chin J Emerg Med, February 2024, Vol. 33, No. 2 ·163·
+
+(NSAIDs) 治疗轻度疼痛 [ 数字评分量表 (numeric rating scale, NRS) 1~3 分]，使用对乙酰氨基酚/阿片类药物组合治疗中度疼痛（NRS 4-6 分），使用阿片类药物治疗重度疼痛（NRS 7~10 分）。
+
+所有阿片类药物的使用均需按照《医疗机构麻醉药品、第一类精神药品管理规定》进行存储、领取和使用。为了优化镇痛效果并减少镇痛相关不良反应，建议采用阿片类药物最小化镇痛策略：反复对患者进行疼痛评估，逐步增加药物剂量，直至达到镇痛目标。与此同时，采用逐步升级的多模态镇痛（multi modal analgesia, MMA，也称为平衡镇痛），即以阿片类药物为基础，使用多种镇痛药物（包括阿片类和非阿片类药物）和非药物手段进行综合干预以达到镇痛目标，而不是阿片类单药治疗来控制疼痛。MMA 允许不同类别的药物协同控制疼痛，同时降低了每种药物的不良反应概率。
+
+成功的 MMA 包括阿片类药物、NSAIDs、加巴喷丁类药物、局部麻醉治疗（区域阻滞或神经干阻滞）、物理治疗和心理治疗。如果阿片类药物的需求量增加，应尽早考虑引入辅助镇痛药。研究显示，常规剂量的 NSAIDs 或曲马多与阿片类药物联合使用，可减少阿片类药物 20%~50% 的用量。此外，应用非阿片类镇痛药物，特别是 NSAIDs 能显著降低恶心、呕吐等阿片类药物不良反应的发生。在联合阿片类药物使用时，非甾体类抗炎药[2]、氯胺酮[3] 和加巴喷丁等镇痛药物能有效减轻重症患者的非神经性疼痛；而对神经性疼痛，加巴喷丁和卡马西平具有较好的镇痛作用。
+
+1.3 使用途径
+
+推荐意见 2：阿片类药物的使用途径应充分考虑患者个体化的病情和药效与药代动力学的差异。（证据水平低，强推荐）
+
+阿片类药物肌肉注射、皮下注射和静脉用药是常用的给药途径，口服用药的适应证相对较窄，透皮贴是一种有益的补充。
+
+肌肉注射或皮下注射阿片类药物是一种传统的急诊镇痛方法，操作方便，但当患者存在外周水肿、凝血功能障碍、末梢循环差等情况时应避免皮下给药；当患者注射部位有硬结、感染时应避免肌肉注射给药。此外，由于存在药效和药代动力学的个体差异，当用药剂量较大时，也避免使用肌肉或皮下注射，尤其是对于血流动力学不稳定的患者。静脉用药起效快，用量少，可控性强，方便调整，还可避免皮下注射、肌肉注射的反复多次穿刺操作；持续静脉用药对患者的血流动力学影响相对稳定，更适合急危重症患者应用。
+
+口服用药起效较慢。由于存在首过效应，口服吗啡的效价比非肠道给药时减弱 2~6 倍，肠外给药与等效口服给药的剂量比为 1:3，因此口服用药的使用剂量较大，限制了口服用药在急性疼痛治疗中的使用。此外，急危重症患者可能因恶心呕吐或后期需急诊手术要禁食等因素，无法口服用药，在急诊的适应证相对较窄。
+
+芬太尼透皮贴的药物释放速率为 12~75 μg/h，一般每 72 h 更换一次，其作用时间长，对于需要较长时间止痛的患者可以考虑使用。无论是首次使用还是对阿片类药已耐受的患者，芬太尼透皮贴镇痛效果的初步评估都应在用药 24 h 以后，因为此时芬太尼的血药浓度才达到起效所需水平。
+
+2 阿片类药物的镇痛目标和不良反应及应对措施
+
+2.1 镇痛目标
+
+推荐意见 3：急性疼痛患者应当常规进行原发病变与疼痛评估，包括医疗干预效果的评估。（证据水平高，强推荐）不明原因疼痛的患者止痛后不可轻易离院；对于能自主表达的患者，镇痛目标值为 NRS < 4 分；对于不能自主表达的患者镇痛目标值为行为疼痛量表（behavioral pain scale, BPS）< 5 分。（证据水平高，强推荐）
+
+急性疼痛患者应当常规进行原发病变与疼痛评估。未明确疼痛原因的急诊患者镇痛前应告知患者及家属用药后的注意事项，使用阿片类药物镇痛后，每隔 30 min 需对患者进行评估，包括疼痛程度、不良反应等。应当注意，患者疼痛程度的减轻可能会导致医患双方对病情严重程度的轻视，止痛后不可轻易让患者离院，避免因疼痛缓解而延误原发病的诊治[4]。
+
+已明确疼痛原因的患者应根据原发病和医疗干预情况定时进行疼痛评估，有助于进行恰当的镇痛治疗，并可以减少镇痛药物的使用剂量。
+
+基于对急危重症患者镇痛治疗的实用性考虑，建议对能自主表达的患者应用 NRS 评分[5]，镇痛目标值为 NRS < 4 分；而不能自主表达的患者应用 BPS 评分量表[6] 评分，镇痛目标值为 BPS < 5 分。
+
+2.2 不良反应及应对措施
+
+推荐意见 4：阿片类药物使用过程中需关注呼吸抑制、血压下降和胃肠蠕动减弱等不良反应，及时发现并处理。（证据水平高，强推荐）给予患者严格的目标镇痛，杜绝盲目、过量使用阿片类药物，避免诱发成瘾，还需警惕药物耐受和药物诱导的痛觉过敏。（证据水平高，强推荐）
+
+阿片类药物会引起多种不良反应。急性不良反应通常与剂量有关，主要包括呼吸抑制、血压下降和胃肠蠕动减弱。与多次较小剂量给予阿片类药物相比，少次大剂量用药更容易出现相关的不良反应。
+
+阿片类药物导致的最常见的危及生命的不良反应是呼
+
+=== 第3页 ===
+·164·
+
+中华急诊医学杂志 2024 年 2 月第 33 卷第 2 期 Chin J Emerg Med, February 2024, Vol. 33, No. 2
+
+吸抑制。在老年人、肥胖患者、既往患有睡眠呼吸暂停和有肺部基础疾病的患者中尤为明显。治疗剂量的阿片类药物对血容量正常患者的心血管系统一般无明显影响，但低血容量的患者容易发生低血压。用药过程中应密切监测生命体征，保持呼吸道通畅，一旦发生呼吸抑制等紧急情况，应立即辅助通气，必要时应用纳洛酮等拮抗药物。纳洛酮的给药剂量应根据患者反应决定，在纠正呼吸抑制时，纳洛酮的首次静脉注射剂量为 0.4~2 mg，如无反应则每隔 2~3 min 重复给药，直至达到相应逆转效果。
+
+实际上，大多数患者更容易出现消化道症状（如恶心、呕吐、便秘），以及瘙痒、头晕、头痛和嗜睡等不良反应。一些研究发现，在使用阿片类药物的过程中，92% 的患者至少经历 1 次不良反应，76% 的患者经历 2 次或以上的不良反应 [17]。针对阿片类药物引起的恶心、呕吐等胃肠道反应，可以考虑预防性给予止吐药物，通常选择 5-HT3 受体类拮抗药（如昂丹司琼、帕洛诺司琼）、抗胆碱能药物（东莨菪碱）等。阿片类药物器官毒性虽低，但因绝大多数阿片类药物经肝代谢，严重肝功能不全者禁用。
+
+成瘾性和戒断症状也是阿片类药物需要特别注意的不良反应。应该认识到，阿片类药物用于中重度疼痛的控制时一般不会导致成瘾，只有在超过目标镇痛范围时才可能引起中枢欣快感，导致成瘾发生。因此，严格的目标镇痛、杜绝盲目过量使用阿片类药物是避免成瘾发生的核心理念。另一方面，随着阿片类药物的长期使用，患者的中枢神经系统会发生变化，导致对阿片类药物的镇痛反应性减弱，对部分患者来说，即使在术中输注短效阿片类药物，也可能发生药物耐受 [18]。不同于耐受性增加，药物诱导的痛觉过敏 (opioid-induced hyperalgesia, OIH) 也需要关注，其定义为阿片类药物使用背景下的疼痛加重。OIH 的发生可能与阿片类药物暴露时间或药物剂量无关，越来越多的证据表明，超短作用的阿片类药物如瑞芬太尼，更容易引起这种现象 [11-13]。
+
+3 阿片类药物在急危重症中的应用
+
+3.1 胸痛
+
+3.1.1 急性冠脉综合征 (ACS)
+
+推荐意见 5：ACS 患者如果使用最大耐受量抗缺血药物治疗仍有缺血性胸痛，可用吗啡治疗。（证据水平中，强推荐）
+
+自 20 世纪初以来，吗啡就一直被推荐用于 ACS 患者的治疗。2014 年美国心脏协会 (AHA)/美国心脏病学会基金会指导委员会 (ACCF) 建议，在没有禁忌证的情况下，如果使用最大耐受量抗缺血药物的治疗仍有缺血性胸痛，对非 ST 段抬高急性冠脉综合征 (NSTE-ACS) 患者静脉注射吗啡是合理的 [14]。2015 年欧洲心脏病学会 (ESC) 指南也提到阿片类药物可在有指征时使用，但要注意其不良反应 [15]。吗啡得到了所有 NSTE-ACS 疼痛管理指南的认可，是 ACS 镇痛管理的重要组成部分 [16]。
+
+使用方法：吗啡 5~10 mg，皮下注射、肌肉注射或静脉注射。
+
+3.1.2 急性主动脉夹层
+
+推荐意见 6：使用阿片类药物控制疼痛是急性主动脉夹层患者的首要治疗之一。（证据水平高，强推荐）
+
+疼痛是急性主动脉夹层患者最常见的症状，也常是首发症状，其中以胸背部难以忍受的剧烈疼痛最常见，也可累及腹部、腰部、下肢等，部分患者疼痛呈现转移性 [17]。使用阿片类药物控制疼痛是急性主动脉夹层患者的主要治疗内容之一。有效镇痛后，患者肾上腺素分泌减少，有利于对血压和心率的控制，同时阿片类药物对躁动、呼吸急促也有益 [18]。主动脉夹层必须迅速控制疼痛，NRS 目标为 <4 分，同时避免过度镇静、呼吸抑制和呕吐。
+
+使用方法：吗啡 5~10 mg，静脉注射（最多可以用到每 4 h 10 mg）；芬太尼 25~100 μg，每 30~60 min 静脉注射 [19]。
+
+3.2 腹痛
+
+3.2.1 不明原因的腹痛
+
+推荐意见 7：对急诊剧烈腹痛但原因不明的患者使用阿片类药物可降低疼痛的强度，不影响查体与诊断的准确性，可以在做好医患沟通的情况下使用。（证据水平中，中推荐）
+
+非创伤性急性腹痛常见病因包括急性阑尾炎、急性胰腺炎、憩室炎、胆石症、输尿管结石、消化性溃疡穿孔、肠梗阻、以及血管性疾病如腹主动脉瘤、肠系膜动脉缺血、主动脉夹层破裂等。既往在急诊科对腹痛患者使用镇痛药通常会非常谨慎，以恐掩蔽症状。但研究证据表明，急腹症患者早期使用阿片类药物镇痛不仅不影响体格检查与诊断的准确性，同时减少了干扰性疼痛，可以提高患者的满意度和配合度，也不影响后续的治疗选择。因此，在除外麻痹性肠梗阻后，不明原因的非创伤性急性腹痛剧烈时（指 NRS ≥ 7 分，下同）可考虑使用阿片类药物。但需要强调，镇痛后需要仔细监测患者情况，做好医患沟通，避免因疼痛缓解而松懈麻痹、延误患者后续诊断和处理。
+
+有指征时的使用方法：吗啡 5~10 mg 静脉注射。
+
+3.2.2 急性阑尾炎
+
+推荐意见 8：急性阑尾炎患者剧烈疼痛时可以给予阿片类药物镇痛。（证据水平高，强推荐）
+
+急性阑尾炎是常见急腹症之一，目前越来越多的医疗机构采用 CT 扫描来常规辅助诊断急性阑尾炎，这也减少了体格检查对诊断策略的影响。疑似急性阑尾炎时给予阿片类药物早期镇痛可能会使外科医生决定保守治疗的几率
+
+=== 第4页 ===
+中华急诊医学杂志 2024 年 2 月第 33 卷第 2 期 Chin J Emerg Med. February 2024, Vol. 33, No. 2 · 165 ·
+
+有所增加，但似乎也不会改变诊断准确性或手术结果，穿孔等并发症的发生率也没有差异 [29]。
+
+使用方法：吗啡 5~10 mg 静脉注射。
+
+3.2.3 急性胰腺炎
+
+推荐意见 9：急性胰腺炎患者疼痛剧烈时，氢吗啡酮、喷他佐辛、芬太尼、舒芬太尼等多种药物都可使用。不推荐使用吗啡和哌替啶。（证据水平高，强推荐）
+
+关于急性胰腺炎的镇痛，既往提及最多的是吗啡导致 Oddis 括约肌收缩，所以用相对较弱的哌替啶。但研究发现，包括哌替啶在内的所有阿片类药物均会不同程度的引起 Oddis 括约肌收缩，从而可能导致胆道压力升高。根据影响程度，Krishnamurthy 等 [31] 将阿片类药物分为 4 个等级，吗啡和哌替啶均位于最高级别，也即哌替啶并非传统上认为的那样安全。此外，哌替啶用药安全窗较窄，不良反应复杂，对伴有肝、肾功能障碍及神经系统疾病的患者不适用。相对而言，喷他佐辛镇痛效力约为吗啡的 1/3，远高于哌替啶，而对 Oddis 括约肌影响很小。
+
+在一些临床观察中，Oddis 括约肌的收缩对患者预后的影响并不确定。一项对 227 例急性胰腺炎患者的 5 个 RCT 的荟萃分析发现，阿片类镇痛药和非阿片类镇痛药在胰腺炎并发症及其他严重不良事件的风险上没有差异，使用阿片类药物的优势是可以不用担心使用 NSAIDs 可能造成的急性肾损伤 [32]。2019 WSES 指南认为对于未气管插管的患者，氢吗啡酮优于吗啡或芬太尼 [2]。推荐使用氢吗啡酮 1~2 mg 皮下注射或肌肉注射。如果使用芬太尼，推荐剂量为 25~100 μg 静脉注射。
+
+急性胰腺炎早期常需持续或多次应用镇痛药物，芬太尼透皮贴是较好的选择。芬太尼透皮贴 25 μg/h 的剂量已被证明并不会对 Oddis 括约肌产生影响。与芬太尼相比，舒芬太尼与 μ 受体结合力强，并且其脂溶性高，较易透过血脑屏障，在国内的实践应用中也取得了不错的效果 [29]。
+
+这些药物的使用剂量应根据患者的镇痛目标进行滴定式调整。
+
+3.2.4 肠梗阻
+
+推荐意见 10：麻痹性肠梗阻患者禁止使用阿片类药物；机械性肠梗阻患者中，非恶性肿瘤导致或恶性肿瘤导致但需要姑息手术的患者不建议使用阿片类药物镇痛，恶性肿瘤导致且不考虑手术的患者可谨慎地使用阿片类药物。（证据水平中，弱推荐）
+
+由于 μ 阿片受体的激活会抑制肠道运动，因此麻痹性肠梗阻患者禁止使用阿片类药物。非恶性肿瘤导致的机械性肠梗阻可能需要手术解除梗阻，使用阿片类药物镇痛可能导致术后肠梗阻 [33]，故不建议使用；恶性肿瘤导致肠梗阻但需要姑息手术的患者情况类似。但如果是恶性肿瘤导致的机械性肠梗阻且不考虑手术的患者，吗啡、羟考酮、芬太尼和美沙酮是控制其疼痛最有效的药物 [34]，尤其对中重度持续性疼痛和绞痛有效。但要注意，使用吗啡等强效阿片类药物要控制剂量，大剂量使用可能导致便秘和加重肠梗阻。此外，这类患者常不能口服用药，因此首选芬太尼透皮贴或吗啡皮下、肌肉注射或静脉注射。推荐吗啡 5~10 mg 皮下、肌肉注射或静脉注射，或使用芬太尼透皮贴 25 μg/h。
+
+3.2.5 胃肠穿孔
+
+推荐意见 11：胃肠穿孔患者不使用阿片类药物镇痛。（证据水平中，强推荐）
+
+对胃肠穿孔及其他可能需要肠道手术的患者，减少阿片类药物的使用与胃肠功能的早期恢复和更短的住院时间有关 [37-38]，此类患者不建议使用阿片类药物。
+
+3.2.6 胆石症与胆绞痛
+
+推荐意见 12：胆石症与胆绞痛患者不常规使用阿片类药物镇痛。（证据水平高，中推荐）
+
+一个纳入 4 项 RCT 的 Meta 分析显示，比较 NSAIDs 与阿片类药物治疗胆绞痛时，疼痛缓解的比例差异无统计学意义 [31]，另有一项研究比较了 NSAIDs 与阿片类药物的并发症，发现两种治疗之间差异无统计学意义 [32]。因此，从阶梯治疗疼痛的策略来说，不建议常规使用阿片类药物。
+
+3.2.7 尿石症与肾绞痛
+
+推荐意见 13：阿片类药物是尿石症与肾绞痛的常用药物，建议使用多模式镇痛以减少阿片类药物的用量。（证据水平高，强推荐）
+
+在泌尿系统结石引起疼痛的患者中，目前临床使用最多的镇痛药是阿片类药物。在美国，约 2/3 的患者在诊断肾绞痛时使用了阿片类药物 [33]，其中哌替啶曾一度是使用最多的药物 [34]。哌替啶 100 mg 肌注时，虽然能使大多数患者疼痛缓解 50% 以上，但有报道称 2/3 以上患者会出现嗜睡、头晕、恶心或呕吐等不良反应，因此，不推荐使用哌替啶，而吗啡静脉注射 5~10 mg 是可以考虑的。此外，芬太尼也可用于控制肾绞痛，尤其是对患有严重疼痛的患者。可以使用芬太尼 50~100 μg 静脉注射，建议前期给与 NSAIDs、利多卡因等多模态镇痛，以减少阿片类药物的使用。
+
+但值得注意是，肾绞痛患者使用阿片类药物镇痛所带来的成瘾性问题，肾结石是很多阿片成瘾者最初接触阿片类药物的原因 [35]。美国泌尿外科协会关于阿片类药物的立场声明建议使用必要的最低剂量，并尽快停用 [36]，而通过多模态镇痛以减少阿片类药物的使用，则是得到了美国疼痛协会 [37,38] 的强烈支持。
+
+如果没有 NSAIDs 的禁忌证，急诊医生可使用 NSAIDs 静脉注射和 1 000 mL 生理盐水快速输注作为一线治疗；无效时给予利多卡因 1.5 mg/kg 静脉注射作为二线补充 [39]；
+
+=== 第5页 ===
+·166·  
+中华急诊医学杂志 2024 年 2 月第 33 卷第 2 期 Chin J Emerg Med, February 2024, Vol. 33, No. 2  
+
+阿片类只是作为三线治疗。尽管 NSAIDs 是一线药物，但和阿片类药物相比，即使短期使用，也可能增加胃损伤、胃肠道出血和可能发生心肌梗死的风险[140-142]。对于顽固性疼痛或有 NSAIDs 禁忌证的患者（消化性溃疡史，已知或怀疑的肾功能损害等），可考虑使用阿片类药物[13]。
+
+### 3.3 创伤与烧伤
+
+**推荐意见 14**：吗啡和芬太尼是急性中重度创伤性疼痛的一线治疗。（证据水平高，强推荐）
+
+多个相关的共识一致推荐阿片类药物作为急性中重度创伤疼痛的一线治疗[143]。NRS 评分 >3 分，吗啡注射液 5~10 mg/次，肌注或皮下注射，30 min 内疼痛无有效缓解者可追加一次；或芬太尼注射液静脉注射 50~100 μg/次，密切监测患者的呼吸情况。此外，也可采用患者自控镇痛 (patient controlled analgesia, PCA) 方式给药，包括静脉、硬膜外、局部连续给药等途径。如与其他药物联合使用，阿片类药物酌情减量 25%~50%。
+
+**推荐意见 15**：长骨骨折时可使用阿片类药物控制中重度疼痛。（证据水平高，强推荐）
+
+长骨骨折后虽然急性疼痛具有重要的保护作用，并随着损伤的愈合而逐渐消退，但受伤时的疼痛治疗对于改善患者的伤口愈合、身体应激反应、舒适度、缩短住院时间以及减少患者的长期负面影响非常重要[145]。然而，研究报告 30% 的长骨骨折患者在急诊科没有接受任何止痛治疗。
+
+在控制四肢骨折的疼痛方面，与静脉注射布洛芬相比，静脉注射吗啡能更快、更好地缓解疼痛[146]；静脉注射芬太尼可达到类似吗啡的镇痛效果，但缓解疼痛更迅速；而局部神经阻滞则优于静脉注射芬太尼和氢吗啡酮[146]。此外，NSAIDs 会抑制前列腺素的产生，可能影响骨形成和骨吸收的平衡，一般不用于骨折患者，特别是可能出现延迟愈合的患者，而此时使用阿片类药物相对更安全，且降低了可能滥用的趋势[147]。
+
+**推荐意见 16**：芬太尼或瑞芬太尼可作为重症颅脑创伤患者伤后立即使用的镇痛药物。（证据水平高，强推荐）
+
+为有效降低机体的应激反应及脑能量代谢，重症颅脑创伤患者伤后应尽早给予镇痛、镇静治疗。阿片类药物是重症脑损伤患者的主要镇痛药物，其中芬太尼最为常用。而吗啡由于作用时间长，会产生活性代谢产物，并可能诱导抽搐，不适用于脑损伤患者。如果需要低温治疗，常用的镇痛药物也为芬太尼，镇静药物则为咪达唑仑和丙泊酚。冬眠合剂曾是低温治疗的标准辅助药物，优点是降低体温调定阈值，但主要缺点在于对循环的影响较大。
+
+需要注意的是，阿片类药物对颅内压和脑灌注压有一定影响。单次快速静脉注射或短时间内给予较大剂量阿片类药物会导致颅内压升高，脑灌注压和平均动脉压降低。因此建议采用缓慢滴定式给药以避免此类情况的发生。
+
+推荐用法：在保证气道安全的情况下，静脉滴注芬太尼 25~200 μg/h、丙泊酚 2.1~13.0 mg/(kg·h) 和咪达唑仑 2.5~10 mg/h。
+
+**推荐意见 17**：阿片类药物是烧伤急性疼痛治疗的一线镇痛药物。（证据水平高，强推荐）
+
+烧伤尤其是大面积烧伤后的急性疼痛往往极为剧烈，阿片类药物是急性期烧伤疼痛的一线镇痛药物。烧伤疼痛可分为背景性疼痛和操作性疼痛。
+
+背景性疼痛发生在静息时，轻者可口服阿片类药物如羟考酮、氢吗啡酮、吗啡缓释片、氢考酮缓释片等，严重者可考虑应用自控镇痛泵或静脉持续泵入阿片类药物[48-49]。最常用的是吗啡、芬太尼等[48-49]，后者起效相对较快。值得注意的是，阿片类药物应用于老年、女性患者或静脉给药时，低血压的发生率会增加[50]。
+
+实施药物镇痛时，可以参考的使用方法：
+
+（1）静脉给药：可静脉注射吗啡 10 mg，如效果欠佳可逐渐加大剂量至 20 mg，应用 1 次；也可直接缓慢静脉注射杜非合剂（盐酸哌替啶 100 mg 或 50 mg + 氯丙嗪 50 mg 或 25 mg）或杜氯合剂（盐酸哌替啶 100 mg 或 50 mg + 氯哌利多 2 mg 或 4 mg）。在应用吗啡、盐酸哌替啶等时，应严密监测呼吸情况。维持剂量：每 12 h 使用曲马多 200 mg 或舒芬太尼 0.75 μg/kg 加入生理盐水 250 mL 中静脉滴注。
+
+（2）镇痛泵：① 舒芬太尼 3 μg/kg + 氟哌啶醇 5 mg（或其他 5HT-3 受体拮抗剂），用生理盐水稀释至 120 mL，设定背景剂量 2 mL/h，单次剂量 0.5 mL，锁定时间 10 min，连续使用时间约 2 d。② 芬太尼 0.8~1.0 mg + 氟哌啶醇 5 mg（或任何一种 5HT-3 受体拮抗剂），稀释至 120 mL，设定背景剂量 2 mL/h，单次剂量 0.5 mL，锁定时间为 10 min，连续使用时间约 2 d，必要时叠加 NSAIDs。
+
+（3）PCA：对烧伤患者静脉注射阿片类药物最常见的方法之一就是通过 PCA[51]。一般需要麻醉科配合。
+
+操作性疼痛是指在烧伤病程中由各种诊疗操作如换药、功能锻炼等引发的疼痛，最常见的是换药痛。操作性疼痛由于疼痛剧烈且规律发生，甚至可引起患者的期待性焦虑，因此必须加强镇痛[51-53]。医师能预见性地估计烧伤操作性疼痛的发生及强度，给予有效管理后，这种疼痛能够降低到患者可耐受范围。研究显示，预先应用右美托咪定可在减少麻醉中瑞芬太尼用量的同时减轻换药后痛觉过敏等不良反应，但可能会增加患者心动过缓的发生[54]。而使用丙泊酚联合瑞芬太尼 PCA 时，患者在治疗操作中可保留语言交流和合作能力，增加了操作合作性[55]。
+
+换药时可参考的镇痛方法：换药前 10 min 静脉推注芬太尼 50 μg，缓慢静滴右美托咪定 60 μg，换药期间持续微量泵入芬太尼 0.1 mg/h+右美托咪定 40 μg/h，必要时微
+
+=== 第6页 ===
+量泵入咪达唑仑 5 mg/h[56]。
+
+3.4 急性非骨折性四肢疼痛、腰痛、头痛
+
+推荐意见 18：急性非骨折性四肢疼痛患者不常规使用阿片类药物镇痛。（证据水平高，中推荐）
+
+急性非骨折性肢体损伤是急诊常见情况，患者通常接受单剂量的口服镇痛药物，同时等待进一步的治疗。研究发现，对于急性肢体疼痛的急症患者，使用非阿片类联合镇痛药或含阿片类联合镇痛药，疼痛减轻差异无统计学意义 [57]，而接受阿片类药物治疗的患者其恶心和呕吐发生更频繁 [58]。此外，阿片类药物可引起疼痛的剂量依赖性增加 [59]。因此，阿片类药物并不是急诊急性肌肉骨骼疼痛的合理选择，不建议常规使用，只有严重的肢体缺血性疼痛时可以考虑。
+
+推荐意见 19：腰痛患者不常规使用阿片类药物镇痛。（证据水平中，弱推荐）
+
+腰痛可由腰部肌肉、韧带等软组织的扭伤、劳损引起，也可以与脊髓硬化症、腰椎间盘脱出症等原因有关。对于急性腰痛发作的镇痛，目前一般推荐是 NSAIDs[60]。虽然在欧美国家会有相当一部分的腰痛患者使用阿片类药物，但其相关指南都不推荐使用 [61]，阿片类药物和 NSAIDs 在疼痛缓解和功能保护方面没有差异 [62-63]。
+
+推荐意见 20：绝大多数类型的头痛不建议使用阿片类镇痛药，仅在其他药物都无效的偏头痛中可试用阿片类镇痛药作为补救性治疗。（证据水平中，弱推荐）
+
+头痛的原因很多，在急诊科，头痛的处理旨在排除严重疾病，如脑膜炎和颅内出血，并缓解症状。偏头痛是急诊最常见的头痛类型，约占原发性头痛相关急诊量的 34.6%。在美国，有一半以上的偏头痛在急诊使用了阿片类药物 [64]，但关于急性头痛管理的指南性文件都不建议使用阿片类镇痛药作为绝大多数类型头痛的一线治疗 [65-66]。大量的研究支持非阿片类药物治疗偏头痛的疗效，特别是 5-羟色胺能药物。也有研究证实，对于偏头痛患者的治疗，静脉注射丙氯哌嗪 + 苯海拉明优于静脉注射氢吗啡酮 [67]。
+
+3.5 医源性疼痛
+
+3.5.1 侵入性操作
+
+推荐意见 21：对于短暂的侵入性操作，若局麻药效果不佳，可选用作用时间短的阿片类药物如芬太尼。（证据水平中，中推荐）
+
+对于诊断操作、小手术等所致的短暂疼痛，应优选局部麻醉药，若效果不佳，患者疼痛明显，可使用作用时间短的阿片类药物如芬太尼。研究证明，芬太尼静脉注射比吗啡在侵入性操作时更有效 [68]，使用剂量为 1~2 μg/kg。
+
+推荐意见 22：气管插管时，应提前 2 min 给予芬太尼 2~4 μg/kg 镇痛。（证据水平高，强推荐）
+
+气管插管会引起部分患者强烈的应激反应，如心动过速和高血压，这对高危患者是不利的。快速序贯诱导插管致力于尽可能缩短从意识消失到气管插管的时间间隔，以减弱这类应激反应。通常选用起效和代谢快速的阿片类药物，如芬太尼、瑞芬太尼和吗啡 [69]。芬太尼常用于防止插管期间的交感神经刺激 [70-71]，插管时剂量在无高血压患者给予 2 μg/kg，在高血压患者给予 4 μg/kg。芬太尼的即时镇痛效果在静脉注射 1 min 后即可出现 [71]，可维持 30~60 min，因此，给药时机一般建议在插管前 2 min 给予 [72]。
+
+3.5.2 有创呼吸机患者
+
+推荐意见 23：对行有创呼吸机治疗的患者常规给予瑞芬太尼、舒芬太尼、芬太尼或吗啡持续镇痛，在可能导致操作性疼痛的处置前预先干预以减轻疼痛，并常规监测疼痛状态。（证据水平高，强推荐）
+
+目前监护室中多使用早期舒适化、镇静最小化和人文关怀最大化策略（early comfort using analgesia, minimal sedatives, and maximal humane care, eCASH）[73]。避免和治疗疼痛是呼吸机治疗的重症患者管理的一个主要目标，但 50%~70% 的患者在重症监护病房会经历疼痛。优化疼痛控制可能有利于临床结局，疼痛控制不良的原因多可能是由原发疾病和气管插管机械通气造成的背景疼痛，或是由常规护理监测和侵入性操作造成的操作性疼痛，如翻身、吸痰或放置动静脉导管等。
+
+背景疼痛需要长时间控制，而吗啡和芬太尼长期持续输注时，药代动力学不佳；瑞芬太尼作为一种可控性强的镇痛药物，非常适合用于需要较长时间镇痛的呼吸机患者。与芬太尼或吗啡镇痛方案相比，瑞芬太尼能减少机械通气的时间、改善脱机过程、减少从停止镇静到拔管的时间。舒芬太尼分布迅速、清除率高，可防止长时间药物积累，且与咪达唑仑具有协同作用，可减少用药剂量，舒芬太尼联合咪达唑仑与单用咪达唑仑相比，可减少谵妄发生率、缩短每日唤醒时间、降低机体应激反应、促进肺功能恢复 [74]。
+
+尽管大多数危重患者会持续接受固定剂量的阿片类镇痛药，但在操作性疼痛预先使用镇痛药方面仍常常被忽略，只有不到 25% 的患者在进行疼痛性操作时接受了补充治疗。研究证实，对行机械通气的重症患者，翻身前给予芬太尼能明显降低翻身时的疼痛发生率 [75]。建议在疼痛性操作开始前 5 min 单次静脉注射芬太尼，剂量为内科患者 1 μg/kg，手术和创伤患者 1.5 μg/kg，按照真实体重计算；此外，也可使用舒芬太尼治疗预期的操作性疼痛，患者翻身前 6~7 min 静脉推注 0.15 μg/kg 对 90% 的患者有效。
+
+3.6 急性左心衰竭及难治性呼吸困难
+
+推荐意见 24：阿片类药物可用于急性左心衰竭（肺水肿）患者，也可试用于其他难治性呼吸困难，但需要在严密监测下使用。（证据水平中，弱推荐）
+
+=== 第7页 ===
+·168·
+
+中华急诊医学杂志 2024 年 2 月第 33 卷第 2 期 Chin J Emerg Med, February 2024, Vol. 33, No. 2
+
+急性左心衰竭（肺水肿）患者因濒死感而致精神极度紧张，加重心肌氧耗，给予吗啡能减轻患者呼吸困难症状、缓解患者恐惧情绪，减少不必要的过强呼吸驱动，使全身的代谢及氧耗降低。《急性心力衰竭中国急诊管理指南（2022）》[76] 与欧洲心力衰竭指南都建议在治疗早期使用小剂量吗啡静脉注射，并且欧洲和日本的心衰指南还建议吗啡作为晚期心衰患者的难治性呼吸困难的姑息治疗 [77-78]。
+
+用法：吗啡 2.5~5.0 mg 静脉缓慢注射，也可皮下注射或肌肉注射 [79]。伴明显的持续低血压或休克患者禁用。
+
+除上述之外，研究表明，阿片类药物在治疗各种原因引起的呼吸窘迫、难治性呼吸困难方面也取得了较好的结果 [80]。虽然静脉注射吗啡可能导致中枢神经系抑制和通气驱动减少，但对治疗和缓解疼痛，甚至是高呼吸驱动的慢性阻塞性肺病、肺间质病引起的难治性呼吸困难也是有效的。阿片类药物对呼吸困难的影响被认为是多因素的，包括减少不必要的呼吸驱动，改变中枢感知，缓解焦虑 [81]。特别要注意的是，相对于缓解疼痛，缓解呼吸困难所需的吗啡剂量要更低 [82-83]，而大剂量的吗啡可能增加气管插管的概率。
+
+综上，阿片类药物在各类急危重症相关的重度疼痛疾病中的初始镇痛选择总结见表 2。
+
+表 2 阿片类药物在急危重症中的应用速查表
+
+| 重度疼痛疾病 | 初始镇痛选择 |
+| --- | --- |
+| 急性冠脉综合征 | 吗啡 5~10 mg，皮下注射、肌肉注射或静脉注射 |
+| 急性主动脉夹层 | 吗啡 5~10 mg 或芬太尼 25~100 μg 静脉注射 |
+| 急性阑尾炎 | 吗啡 5~10 mg 静脉注射 |
+| 急性胰腺炎 | 氢吗啡酮 1~2 mg 皮下注射或肌肉注射，或芬太尼 25~100 μg 静脉注射，或使用芬太尼贴 25 μg/h |
+| 恶性肿瘤导致且不考虑手术的机械性肠梗阻 | 吗啡 5~10 mg 皮下、肌肉注射或静脉注射，或使用芬太尼透皮贴 25 μg/h |
+| 尿石症与肾绞痛 | 吗啡 5~10 mg，或芬太尼 50~100 μg 静脉注射，建议前期给与 NSAIDs、利多卡因等多模态镇痛，以减少阿片类药物的使用 |
+| 创伤 | 吗啡 5~10 mg，肌注或皮下注射，或芬太尼注射液 50~100 μg 静脉注射 |
+| 烧伤 | 吗啡 10 mg 静脉注射，根据镇痛目标进行滴定式调整 |
+| 侵入性操作 | 芬太尼 1~2 μg/kg 静脉注射 |
+| 气管插管时 | 芬太尼 2~4 μg/kg 静脉注射 |
+| 有创呼吸机患者 | 瑞芬太尼、芬太尼或吗啡持续静脉泵入，根据镇痛目标进行滴定式调整 |
+| 急性左心衰竭 | 吗啡 2.5~5.0 mg 静脉缓慢注射、皮下注射或肌肉注射 |
+
+注：不建议常规使用阿片类药物的病症：麻痹性肠梗阻、非恶性肿瘤导致或者恶性肿瘤导致但考虑姑息手术患者的机械性肠梗阻、胃肠穿孔、胆石症与胆绞痛、急性非脊柱性四肢疼痛、腰痛、头痛
+
+4 结语
+
+阿片类药物是一把双刃剑，使用得当能有效缓解急危重症患者的疼痛，改善患者的舒适度和预后，但使用不当则可能带来相应的不良反应甚至成瘾性风险。我们必须要合理把握指征，根据每个患者当时的镇痛目标合理选择和使用阿片类药物。
+
+执笔人：刘业成
+
+共识专家组：曹钰 柴艳芬 陈兵 陈凤英 陈旭岩 崇巍 褚沛 邓颖 董士民 韩小彤 何小军 冀兵 蒋龙元 金红旭 李湘民 李燕 李勇 刘继海 刘业成 卢中秋 吕传柱 马岳峰 米玉红 聂时南 彭鹏 秦历杰 商德亚 田英平 王旭东 王振杰 魏捷 温伟 吴利东 邢吉红 熊辉 杨立山 于学忠 张剑锋 张进祥 张茂 张新超 张起伦 赵斌 赵敏 赵晓东 周荣斌 朱长举 朱华栋 朱继红
+
+利益冲突 所有作者声明无利益冲突
+
+参 考 文 献
+
+[1] Carlson CL. Effectiveness of the World Health Organization cancer pain relief guidelines: an integrative review[J]. J Pain Res, 2016, 9: 515-534. DOI: 10.2147/JPR.S97759.
+
+[2] Jelacic S, Bollag L, Bowdle A, et al. Intravenous acetaminophen as an adjunct analgesic in cardiac surgery reduces opioid consumption but not opioid-related adverse effects: a randomized controlled trial[J]. J Cardiothorac Vasc Anesth, 2016, 30(4): 997-1004. DOI: 10.1053/ j.jvca.2016.02.010.
+
+[3] Tawfie QA, Faris AS, Kausalya R. The role of a low-dose ketamine-midazolam regimen in the management of severe painful crisis in patients with sickle cell disease[J]. J Pain Symptom Manage, 2014, 47(2): 334-340. DOI: 10.1016/j.jpainsymman.2013.03.012.
+
+[4] 北京大学医学部急诊医学系. 成人非创伤性急腹症早期镇痛专家共识 [J]. 中华急诊医学杂志, 2020, 29(12): 1548-1553. DOI: 10.3760/cma.j.issn.1671-0282.2020.12.007.
+
+[5] 中华医学会重症医学分会. 中国成人 ICU 镇痛和镇静治疗指南 [J]. 中华危重病急救医学, 2018, 30(6): 497-514. DOI: 10.3760/cma. j.issn.2095-4352.2018.06.001.
+
+[6] Rose L, Haslam L, Dale C, et al. Behavioral pain assessment tool for critically ill adults unable to self-report pain[J]. Am J Crit Care, 2013, 22(3): 246-255. DOI: 10.4037/ajcc2013200.
+
+[7] Brummett CM, Waljee JF, Goesling J, et al. New persistent opioid
+
+=== 第8页 ===
+中华急诊医学杂志 2024 年 2 月第 33 卷第 2 期 Chin J Emerg Med. February 2024, Vol. 33, No. 2 · 169 ·
+
+use after minor and major surgical procedures in US adults[J]. JAMA Surg, 2017, 152(6): e170504. DOI: 10.1001/jamasurg.2017.0504.
+
+[8] Barnett ML, Olenski AR, Jena AB. Opioid-prescribing patterns of emergency physicians and risk of long-term use[J]. N Engl J Med, 2017, 376(7): 663-673. DOI: 10.1056/NEJMsa1610524.
+
+[9] Shah A, Hayes CJ, Martin BC. Characteristics of initial prescription episodes and likelihood of long-term opioid use - United States, 2006-2015[J]. MMWR Morb Mortal Wkly Rep, 2017, 66(10): 265-269. DOI: 10.15585/mmwr.mm6610a1.
+
+[10] Wibbenmeyer L, Eid A, Kluesner K, et al. An evaluation of factors related to postoperative pain control in burn patients[J]. J Burn Care Res, 2015, 36(5): 580-586. DOI: 10.1097/BCR.0000000000000199.
+
+[11] Rupniewska-Ladyko A, Malec-Milewska M. A high dose of fentanyl may accelerate the onset of acute postoperative pain[J]. Anesth Pain Med, 2019, 9(5): e94498. DOI: 10.5812/aapm.94498.
+
+[12] Yang DZ, Sin B, Beckhusen J, et al. Opioid-induced hyperalgesia in the nonsurgical setting: a systematic review[J]. Am J Ther, 2019, 26(3): e397-e405. DOI: 10.1097/MJT.0000000000000734.
+
+[13] Araldi D, Ferrari LF, Levine JD. Hyperalgesic priming (type II ) induced by repeated opioid exposure: maintenance mechanisms[J]. Pain, 2017, 158(7): 1204-1216. DOI: 10.1097/j.pain.0000000000000898.
+
+[14] Amsterdam EA, Wenger NK, Brindle RG, et al. 2014 AHA/ACC guideline for the management of patients with non-ST-elevation acute coronary syndromes: a report of the American College of Cardiology/American Heart Association Task Force on Practice Guidelines[J]. Circulation, 2014, 130(25): e344-e426. DOI: 10.1161/CIR.0000000000000134.
+
+[15] Roffi M, Patrono C, Collet JP, et al. 2015 ESC guidelines for the management of acute coronary syndromes in patients presenting without persistent ST-segment elevation[J]. Rev Esp Cardiol, 2015, 68(12): 1125. DOI: 10.1016/j.rec.2015.10.009.
+
+[16] Ibánez B, James S, Agewall S, et al. 2017 ESC Guidelines for the management of acute myocardial infarction in patients presenting with ST-segment elevation[J]. Rev Esp Cardiol, 2017, 70(12): 1082. DOI: 10.1016/j.rec.2017.11.010.
+
+[17] Wang WG, Duan WX, Xue Y, et al. Clinical features of acute aortic dissection from the Registry of Aortic Dissection in China[J]. J Thorac Cardiovasc Surg, 2014, 148(6): 2995-3000. DOI: 10.1016/j.jtcvs.2014.07.068.
+
+[18] Erbel R, Aboyans V, Boileau C, et al. 2014 ESC Guidelines on the diagnosis and treatment of aortic diseases[J]. Kardiol Pol, 2014, 72(12): 1169-1252. DOI: 10.5603/KP.2014.0225.
+
+[19] Morello F, Santoro M, Fargion AT, et al. Diagnosis and management of acute aortic syndromes in the emergency department[J]. Intern Emerg Med, 2021, 16(1): 171-181. DOI: 10.1007/s11739-020-02354-8.
+
+[20] 卢魁, 许玉琼, 谭新宇, 等. 急性阑尾炎急诊药物镇痛安全性
+和有效性的 Meta 分析 [J]. 中国急救医学, 2016, 36(7): 647-653. DOI: 10.3969/j.issn.1002-1949.2016.07.016.
+
+[21] Krishnamurthy GT, Krishnamurthy S. Gallbladder, sphincter of oddi, cholecystokinin, and opioid relation. [M]// Nuclear Hepatology. Berlin: Springer, 2009: 175-195. DOI: 10.1007/978-3-642-00648-7_6.
+
+[22] Basurto OX, Rigau CD, Urrutia G. Opioids for acute pancreatitis pain[J]. Cochrane Database Syst Rev, 2013, (7): CD009179. DOI: 10.1002/14651858.CD009179.pub2.
+
+[23] Leppäniemi A, Tolonen M, Tarasconi A, et al. 2019 WSES guidelines for the management of severe acute pancreatitis[J]. World J Emerg Surg, 2019, 14: 27. DOI: 10.1186/s13017-019-0247-0.
+
+[24] 李理, 徐道妙. 右美托咪啶联合舒芬太尼用于重症急性胰腺炎患者镇静镇痛的临床研究[J]. 中国医师杂志, 2016, 18(5): 688-691. DOI: 10.3760/cma.j.issn.1008-1372.2016.05.012.
+
+[25] de Boer HD, Detriche O, Forget P. Opioid-related side effects: Postoperative ileus, urinary retention, nausea and vomiting, and shivering. A review of the literature[J]. Best Pract Res Clin Anaesthesiol, 2017, 31(4): 499-504. DOI: 10.1016/j.bpa.2017.07.002.
+
+[26] Huang XY, Xue J, Gao M, et al. Medical management of inoperable malignant bowel obstruction[J]. Ann Pharmacother, 2021, 55(9): 1134-1145. DOI: 10.1177/0000280020979773.
+
+[27] Thiele RH, Rea KM, Turrentine FE, et al. Standardization of care: impact of an enhanced recovery protocol on length of stay, complications, and direct costs after colorectal surgery[J]. J Am Coll Surg, 2015, 220(4): 430-443. DOI: 10.1016/j.jamcollsurg.2014.12.042.
+
+[28] Bakker N, Cakir H, Doedelmann HJ, et al. Eight years of experience with Enhanced Recovery After Surgery in patients with colon cancer: impact of measures to improve adherence[J]. Surgery, 2015, 157(6): 1130-1136. DOI: 10.1016/j.surg.2015.01.016.
+
+[29] Larson DW, Lovely JK, Cima RR, et al. Outcomes after implementation of a multimodal standard care pathway for laparoscopic colorectal surgery[J]. Br J Surg, 2014, 101(8): 1023-1030. DOI: 10.1002/bjs.9534.
+
+[30] Hawkins AT, Wise PE, Chan T, et al. Diverticulitis: an update from the age old paradigm[J]. Curr Probl Surg, 2020, 57(10): 100862. DOI: 10.1016/j.cpsurg.2020.100862.
+
+[31] Fraquelli M, Casazza G, Conte D, et al. Non-steroid anti-inflammatory drugs for biliary colic[J]. Cochrane Database Syst Rev, 2016, 9(9): CD006390. DOI: 10.1002/14651858.CD006390.pub2.
+
+[32] Henderson SO, Swadron S, Newton E. Comparison of intravenous ketorolac and meperidine in the treatment of biliary colic[J]. J Emerg Med, 2002, 23(3):237-241. DOI: 10.1016/s0736-4679(02)00524-3.
+
+[33] Hosier GW, McGregor T, Beiko D, et al. Persistent opioid use among patients with urolithiasis: a population based study[J]. Eur Urol Focus, 2020, 6(4): 745-751. DOI: 10.1016/j.euf.2019.08.011.
+
+=== 第9页 ===
+· 170 ·  
+中华急诊医学杂志 2024 年 2 月第 33 卷第 2 期 Chin J Emerg Med, February 2024, Vol. 33, No. 2  
+
+[34] Afshar K, Jafari S, Marks AJ, et al. Nonsteroidal anti-inflammatory drugs (NSAIDs) and non-opioids for acute renal colic[J]. Cochrane Database Syst Rev, 2015(6): CD006027. DOI: 10.1002/14651858.CD006027.pub2.  
+
+[35] Krughoff K, Jr Pais VM. Kidney stones and the opioid epidemic: recent developments and review of the literature[J]. Curr Opin Urol, 2020, 30(2): 159-165. DOI: 10.1097/MOU.0000000000000705.  
+
+[36] American Urological Association. AUA position statement: opioid use [EB/OL]. 2019. https://www.auanet.org/about-us/policy-and-position-statements/opioid-use  
+
+[37] Chou R, Gordon DB, de Leon-Casasola OA, et al. Management of postoperative pain: a clinical practice guideline from the American Pain Society, the American Society of Regional Anesthesia and Pain Medicine, and the American Society of Anesthesiologists’ Committee on Regional Anesthesia, Executive Committee, and Administrative Council[J]. J Pain, 2016, 17(2): 131-157. DOI: 10.1016/j.jpain.2015.12.008.  
+
+[38] Manworren RCB. Multimodal pain management and the future of a personalized medicine approach to pain[J]. AORN J, 2015, 101(3): 308-314;quiz 315-318. DOI: 10.1016/j.aorn.2014.12.009.  
+
+[39] Motoy S, Drapkin J, Butt M, et al. Pain management of renal colic in the emergency department with intravenous lidocaine[J]. Am J Emerg Med, 2018, 36(10): 1862-1864. DOI: 10.1016/j.ajem.2018.07.021.  
+
+[40] Masclee GM, Valkhoff VE, Coloma PM, et al. Risk of upper gastrointestinal bleeding from different drug combinations[J]. Gastroenterology, 2014, 147(4): 784-792.e9. DOI: 10.1053/j.gastro.2014.06.007.  
+
+[41] Bally M, Beauchamp ME, Abrahamowicz M, et al. Risk of acute myocardial infarction with real-world NSAIDs depends on dose and timing of exposure[J]. Pharmacoepidemiol Drug Saf, 2018, 27(1): 69-77. DOI: 10.1002/pds.4358.  
+
+[42] Pathan SA, Mitra B, Cameron PA. A systematic review and meta-analysis comparing the efficacy of nonsteroidal anti-inflammatory drugs, opioids, and paracetamol in the treatment of acute renal colic[J]. Eur Urol, 2018, 73(4): 583-595. DOI: 10.1016/j.eururo.2017.11.001.  
+
+[43] Jung H, Osether PIS. Acute management of stones: when to treat or not to treat?[J]. World J Urol, 2015, 33(2): 203-211. DOI: 10.1007/s00345-014-1353-y.  
+
+[44] 鲁开智, 张利东. 战创伤疼痛管理专家共识[J]. 临床麻醉学杂志, 2020, 36(2): 181-186.DOI : 10.12089/jca.2020.02.018.  
+
+[45] Ahmadi A, Bazargan-Hejazi S, Heidari Zadie Z, et al. Pain management in trauma: a review study[J]. J Inj Violence Res, 2016, 8(2): 89-98. DOI: 10.5249/jivcr.v8i2.707.  
+
+[46] Griffioen MA, O'Brien G. Analgesics administered for pain during hospitalization following lower extremity fracture: a review of the literature[J]. J Trauma Nurs, 2018, 25(6): 360-365. DOI: 10.1097/ JTN.0000000000000402.  
+
+[47] Lindestrand AG, Christiansen MLS, Jantzen C, et al. Opioids in hip fracture patients: an analysis of mortality and post hospital opioid use[J]. Injury, 2015, 46(7): 1341-1345. DOI: 10.1016/j.injury.2015.04.016.  
+
+[48] Griggs C, Goverman J, Bittner EA, et al. Sedation and pain management in burn patients[J]. Clin Plast Surg, 2017, 44(3): 535-540. DOI: 10.1016/j.cps.2017.02.026.  
+
+[49] 杨成兰, 魏在荣. 烧伤疼痛研究进展[J]. 中华烧伤杂志, 2017, 33(1): 61-64. DOI: 10.3760/cma.j.issn.1009-2587.2017.01.017.  
+
+[50] Daoust R, Paquet J, Lavigne G, et al. Impact of age, sex and route of administration on adverse events after opioid treatment in the emergency department: a retrospective study[J]. Pain Res Manag, 2015, 20(1): 23-28. DOI: 10.1155/2015/316275.  
+
+[51] James DL, Jowza M. Principles of burn pain management[J]. Clin Plast Surg, 2017, 44(4): 737-747. DOI: 10.1016/j.cps.2017.05.005.  
+
+[52] Wang YW, Beckman J, Hew J, et al. Burn injury: challenges and advances in burn wound healing, infection, pain and scarring[J]. Adv Drug Deliv Rev, 2018, 123: 3-17. DOI: 10.1016/j.addr.2017.09.018.  
+
+[53] Mendoza A, Santoyo FL, Agulló A, et al. The management of pain associated with wound care in severe burn patients in Spain[J]. Int J Burns Trauma, 2016, 6(1): 1-10.  
+
+[54] 杨智斌, 沈江涌, 米克德, 等. 右美托咪定复合瑞芬太尼在烧伤重症监护病房中清醒非插管患者换药时的应用研究[J]. 中华烧伤杂志, 2018, 34(10): 707-713. DOI: 10.3760/cma.j.issn.1009-2587.2018.10.011.  
+
+[55] 黄媛娟, 高国燕, 刘训华, 等. 丙泊酚复合瑞芬太尼自控镇静镇痛在烧伤换药中的应用观察[J]. 中华烧伤杂志, 2014, 30(6): 525-529. DOI: 10.3760/cma.j.issn.1009-2587.2014.06.014.  
+
+[56] 朱峰, 夏照帆. 成人重症烧伤镇痛镇静管理[J]. 中华烧伤杂志, 2018, 34(6): 407-411. DOI: 10.3760/cma.j.issn.1009-2587.2018.06.022.  
+
+[57] Graudins A, Meek R, Parkinson J, et al. A randomised controlled trial of paracetamol and ibuprofen with or without codeine or oxycodone as initial analgesia for adults with moderate pain from limb injury[J]. Emerg Med Australas, 2016, 28(6): 666-672. DOI: 10.1111/1742-6723.12672.  
+
+[58] Bijur PE, Friedman BW, Irizarry E, et al. A randomized trial comparing the efficacy of five oral analgesics for treatment of acute musculoskeletal extremity pain in the emergency department[J]. Ann Emerg Med, 2021, 77(3): 345-356. DOI: 10.1016/j.annemergmed.2020.10.004.  
+
+[59] Hayhurst CJ, Durieux ME. Differential opioid tolerance and opioid-induced hyperalgesia: a clinical reality[J]. Anesthesiology, 2016, 124(2): 483-488. DOI: 10.1097/ALN.0000000000000963.  
+
+[60] Williams CM, Maher CG, Latimer J, et al. Efficacy of paracetamol for acute low-back pain: a double-blind, randomised controlled
+
+=== 第10页 ===
+中华急诊医学杂志 2024 年 2 月第 33 卷第 2 期 Chin J Emerg Med. February 2024, Vol. 33, No. 2 · 171 ·
+
+trial[J]. Lancet, 2014, 384(9954): 1586-1596. DOI: 10.1016/S0140- 6736(14)60805-9.
+
+[61] Qaseem A, Wilt TJ, McLean RM, et al. Noninvasive treatments for acute, subacute, and chronic low back pain: a clinical practice guideline from the American College of Physicians[J]. Ann Intern Med, 2017, 166(7): 514-530. DOI: 10.7326/M16-2367.
+
+[62] Friedman BW, Dym AA, Davitt M, et al. Naproxen with cyclobenzaprine, oxycodone/acetaminophen, or placebo for treating acute low back pain: a randomized clinical trial[J]. JAMA, 2015, 314(15): 1572-1580. DOI: 10.1001/jama.2015.13043.
+
+[63] Markman JD, Rhyne AL, Sasso RC, et al. Association between opioid use and patient-reported outcomes in a randomized trial evaluating basivertebral nerve ablation for the relief of chronic low back pain[J]. Neurosurgery, 2020, 86(3): 343-347. DOI: 10.1093/neuros/nyz093.
+
+[64] Friedman BW, West J, Vinson DR, et al. Current management of migraine in US emergency departments: an analysis of the National Hospital Ambulatory Medical Care Survey[J]. Cephalalgia, 2015, 35(4): 301-309. DOI: 10.1177/0333102414539055.
+
+[65] Giamberardino MA, Affaitati G, Costantini R, et al. Acute headache management in emergency department. A narrative review[J]. Intern Emerg Med, 2020, 15(1): 109-117. DOI: 10.1007/s11739-019-02266-2.
+
+[66] Marmura MJ, Silberstein SD, Schwedt TJ. The acute treatment of migraine in adults: the American Headache Society evidence assessment of migraine pharmacotherapies[J]. Headache, 2015, 55(1): 3-20. DOI: 10.1111/head.12499.
+
+[67] Friedman BW, Irizarry E, Solorzano C, et al. Randomized study of IV prochlorperazine plus diphenhydramine vs IV hydromorphone for migraine[J]. Neurology, 2017, 89(20): 2075-2082. DOI: 10.1212/ WNL.0000000000004642.
+
+[68] Fenster DB, Dayan PS, Babineau J, et al. Randomized trial of intranasal fentanyl versus intravenous morphine for abscess incision and drainage[J]. Pediatr Emerg Care, 2018, 34(9): 607-612. DOI: 10.1097/PEC.0000000000000810.
+
+[69] 朱华栋，于学忠．急诊通道管理共识 [J]．中华急诊医学杂志， 2016, 25(6): 705-708. DOI: 10.3760/cma.j.issn.1671-0282.2016.06.003.
+
+[70] Park KB, Ann J, Lee H. Effects of different dosages of oxycodone and fentanyl on the hemodynamic changes during intubation[J]. Saudi Med J, 2016, 37(8): 847-852. DOI: 10.15537/smj.2016.8.14822.
+
+[71] Stanley TH. The fentanyl story[J]. J Pain, 2014, 15(12): 1215-1226. DOI: 10.1016/j.jpain.2014.08.010.
+
+[72] Teong CY, Huang CC, Sun FJ. The haemodynamic response to endotracheal intubation at different time of fentanyl given during induction: a randomised controlled trial[J]. Sci Rep, 2020, 10(1): 8829. DOI: 10.1038/s41598-020-65711-9.
+
+[73] Vincent JL, Shehabi Y, Walsh TS, et al. Comfort and patient-centred care without excessive sedation: the eCASH concept[J]. Intensive Care Med, 2016, 42(6): 962-971. DOI: 10.1007/s00134-016-4297-4.
+
+[74] 张春媚，何洪洋，李杭，等．舒芬太尼联合咪达唑仑对重症监护病房机械通气患者镇痛镇静的效果 [J]．中国老年学杂志，2018, 38(23): 5744-5746. DOI: 10.3969/j.issn.1005-9202.2018.23.044.
+
+[75] Robleda G, Roche-Campo F, Sendra MA, et al. Fentanyl as pre-emptive treatment of pain associated with turning mechanically ventilated patients: a randomized controlled feasibility study[J]. Intensive Care Med, 2016, 42(2): 183-191. DOI: 10.1007/s00134-015-4112-7.
+
+[76] 中国医疗保健国际交流促进会急诊医学分会，中华医学会急诊医学分会，中国医师协会急诊医师分会，等．急性心力衰竭中国急诊管理指南（2022）[J]．中华急诊医学杂志，2022, 31(8): 1016-1041. DOI: 10.3760/cma.j.issn.1671-0282.2022.08.003.
+
+[77] Ponikowski P, Voors AA, Anker SD, et al. 2016 ESC Guidelines for the diagnosis and treatment of acute and chronic heart failure: the Task Force for the diagnosis and treatment of acute and chronic heart failure of the European Society of Cardiology (ESC) Developed with the special contribution of the Heart Failure Association (HFA) of the ESC[J]. Eur Heart J, 2016, 37(27): 2129-2200. DOI: 10.1093/eurheartj/ehw128.
+
+[78] Kawaguchi J, Hamatani Y, Hirayama A, et al. Experience of morphine therapy for refractory dyspnea as palliative care in advanced heart failure patients[J]. J Cardiol, 2020, 75(6): 682-688. DOI: 10.1016/j.jcc.2019.12.015.
+
+[79] 中华医学会，中华医学会杂志社，中华医学会全科医学分会，等．急性心力衰竭基层诊疗指南（实践版·2019)[J]．中华全科医师杂志， 2019, 18(10): 931-935. DOI: 10.3760/cma.j.issn.1671-7368.2019.10.007.
+
+[80] Ekström MP, Bornefalk-Hermansson A, Abernethy AP, et al. Safety of benzodiazepines and opioids in very severe respiratory disease: national prospective study[J]. BMJ, 2014, 348: g445. DOI: 10.1136/bmj.g445.
+
+[81] Takeyasu M, Miyamoto A, Kato D, et al. Continuous intravenous morphine infusion for severe dyspnea in terminally ill interstitial pneumonia patients[J]. Intern Med, 2016, 55(7): 725-729. DOI: 10.2169/internalmedicine.55.5362.
+
+[82] Murakami M. Opioids for relief of dyspnea immediately before death in patients with noncancer disease: a case series study[J]. Am J Hosp Palliat Care, 2019, 36(8): 734-739. DOI: 10.1177/0149909119832816.
+
+[83] Matsuda Y, Maeda I, Tachibana K, et al. Low-dose morphine for dyspnea in terminally ill patients with idiopathic interstitial pneumonias[J]. J Palliat Med, 2017, 20(8): 879-883. DOI: 10.1089/jpm.2016.0432.
+
+（收稿日期：2023-12-25）
+
+（本文编辑：何小军）
