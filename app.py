@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+"""HealthCareAgents 应用入口与页面路由。"""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -88,7 +90,7 @@ def build_ui_options(raw_options: Any) -> Dict[str, List[Any]]:
     missing = sorted(k for k in REQUIRED_UI_OPTION_KEYS if k not in cleaned)
     if missing:
         missing_text = ", ".join(missing)
-        raise ValueError(f"ui_options ?????: {missing_text}")
+        raise ValueError(f"ui_options 缺少必要键: {missing_text}")
     return cleaned
 
 
@@ -103,7 +105,7 @@ UI_OPTIONS = build_ui_options(_STATIC_CONTENT.get("ui_options", {}))
 def option_list(name: str) -> List[Any]:
     options = UI_OPTIONS.get(name)
     if not options:
-        raise KeyError(f"??? UI ??: {name}")
+        raise KeyError(f"未找到 UI 选项: {name}")
     return options
 
 
@@ -120,11 +122,10 @@ def main() -> None:
 
     protected = set(option_list("protected_pages"))
     if not st.session_state.is_logged_in and page in protected:
-        st.warning("??????????????????????????????")
-        if st.button("??????", type="primary"):
-            st.session_state.is_logged_in = True
-            st.session_state.doctor_name = "????"
-            st.session_state.doctor_title = "????"
+        st.warning("当前页面需要登录后访问，请先完成登录认证。")
+        st.caption("登录后可使用临床辅助、虚拟训练、医生管理后台和个人中心。")
+        if st.button("前往登录与安全", type="primary"):
+            st.session_state.current_page = option_list("sidebar_pages")[-1]
             st.rerun()
         render_footer_note()
         st.stop()
