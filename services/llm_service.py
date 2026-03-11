@@ -20,7 +20,7 @@ def get_client_and_model() -> Tuple[Optional[OpenAI], str]:
     oc_token = safe_secret("OC_GATEWAY_TOKEN") or os.environ.get("OC_GATEWAY_TOKEN", "").strip()
     oc_url = safe_secret("OC_GATEWAY_URL") or os.environ.get("OC_GATEWAY_URL", "http://127.0.0.1:18789/v1").strip()
     if oc_token:
-        return OpenAI(api_key=oc_token, base_url=oc_url), "openclaw"
+        return OpenAI(api_key=oc_token, base_url=oc_url), "minimax"
     # Fallback: DashScope/Qwen
     dashscope_key = safe_secret("DASHSCOPE_API_KEY") or os.environ.get("DASHSCOPE_API_KEY", "").strip()
     if dashscope_key:
