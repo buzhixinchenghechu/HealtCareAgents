@@ -48,6 +48,15 @@ def page_clinical_assistant(
     submitted = False
     with left:
         with st.form("clinical_form", clear_on_submit=False):
+            # 长文本输入区域
+            with st.expander("📋 直接粘贴病历/长文本（可选）", expanded=False):
+                free_text_input = st.text_area(
+                    "病历原文或补充信息",
+                    placeholder="可直接粘贴完整病历、检查报告、病史摘要等长文本...\n\n系统会将此文本与下方结构化信息一起发送给 AI 分析。",
+                    height=200,
+                    key="clinical_free_text",
+                )
+            st.markdown("---")
             a, b, c = st.columns(3)
             with a:
                 patient_name = st.text_input("患者姓名", placeholder="如：张某", key="clinical_patient_name")
@@ -136,6 +145,8 @@ def page_clinical_assistant(
             similar_cases = retrieve_similar_cases(query, cases, top_k=3)
             local_cards = local_plan(age, pain_score, ort_level, opioid_naive, pain_type, diagnosis)
             radar = risk_radar_values(pain_score, ort_level, current_meds_text, comorbidities)
+
+            # 构建结构化摘要
             summary = f"""
 患者：{patient_name or "未命名患者"}，{age} 岁 {gender}
 诊断：{diagnosis}
@@ -151,6 +162,13 @@ ORT：{ort_score}（{ort_level}）
 过敏史：{allergy_text}
 既往不良反应：{adverse_hist_text}
 补充：{extra_notes or "无"}
+"""
+            # 如果有长文本输入，追加到摘要中
+            if free_text_input and free_text_input.strip():
+                summary += f"""
+---
+【用户提供的病历/长文本】
+{free_text_input.strip()}
 """
             ai_text = ask_llm(
                 client,
@@ -183,6 +201,7 @@ ORT：{ort_score}（{ort_level}）
                 "similar_cases": similar_cases,
                 "ai_text": ai_text,
                 "renal_liver_issue": renal_liver_issue,
+                "free_text_input": free_text_input.strip() if free_text_input else "",
             }
 
     result = st.session_state.get("clinical_last_result")
