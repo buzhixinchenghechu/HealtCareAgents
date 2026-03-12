@@ -43,8 +43,8 @@ def page_clinical_assistant(
     primary: str,
 ) -> None:
     st.markdown("### 真实病例辅助")
-    st.caption("左侧病例录入工作台，右侧 AI 辅助建议看板（处方卡片 + 风险雷达 + 循证溯源 + 会诊讨论）。")
-    left, right = st.columns([1.0, 1.15], gap="large")
+    st.caption("左侧病例录入工作台，右侧快速评估看板；AI 联合会诊结论展示于下方全宽区域。")
+    left, right = st.columns([1.0, 1.0], gap="large")
     submitted = False
     with left:
         with st.form("clinical_form", clear_on_submit=False):
@@ -215,8 +215,9 @@ ORT：{ort_score}（{ort_level}）
         result = None
         st.session_state.clinical_last_result = None
 
+    # 右栏：快速状态 + 处方速查表
     with right:
-        st.markdown("#### AI 计算状态实时回馈")
+        st.markdown("#### 快速评估看板")
         if submitted:
             with st.status("正在计算中", expanded=True) as status:
                 st.write("1) 正在解析病例字段与病史结构...")
@@ -230,83 +231,107 @@ ORT：{ort_score}（{ort_level}）
             else:
                 st.markdown("<div class='ok-bar'>✅ 风险可控：建议按计划复评并持续监测不良反应。</div>", unsafe_allow_html=True)
 
-            tab1, tab2, tab3, tab4 = st.tabs(["处方卡片", "风险雷达", "循证溯源", "专家会诊讨论区"])
-            with tab1:
-                st.table(result["local_cards"])
-                if result["ai_text"]:
-                    if result.get("baichuan_review"):
-                        st.markdown("**🤝 OC × 百川医疗联合会诊结论**")
-                        st.write(result["ai_text"])
-                        with st.expander("查看会诊讨论过程"):
-                            st.markdown("**① OC 病例库初步答案**")
-                            st.write(result.get("oc_answer", ""))
-                            st.markdown("**② 百川医疗专家审阅意见**")
-                            st.write(result.get("baichuan_review", ""))
-                    else:
-                        st.markdown("**AI 补充建议**")
-                        st.write(result["ai_text"])
-                else:
-                    st.info("未检测到 API Key，已展示本地规则建议。")
+            st.metric("MME/day", result["mme_day"])
+            st.caption(result["mme_note"])
+            if result["mme_day"] >= 90:
+                st.error("❌ 剂量红线：MME/day >= 90，需强制复核并记录调整依据。")
+            elif result["mme_day"] >= 50:
+                st.warning("⚠️ 剂量警戒：MME/day >= 50，建议评估纳洛酮与高频复评。")
+            if result["renal_liver_issue"]:
+                st.error("肝肾功能异常：需减量并延长给药间隔。")
+            if "苯二氮卓" in result["current_meds_text"]:
+                st.error("检测到联用高风险：阿片类 + 苯二氮卓。")
 
-            with tab2:
+    # ── 全宽 AI 分析区（不受左右栏高度限制）──────────────────────────
+    if result:
+        st.divider()
+        tab1, tab2, tab3, tab4 = st.tabs(["🤝 AI 联合会诊", "📊 风险雷达", "🔍 循证溯源", "💬 专家会诊讨论区"])
+
+        with tab1:
+            if result["ai_text"]:
+                if result.get("baichuan_review"):
+                    st.markdown("### 🤝 OC × 百川医疗联合会诊结论")
+                    st.write(result["ai_text"])
+                    st.markdown("---")
+                    st.markdown("#### 会诊讨论过程")
+                    col_oc, col_bc = st.columns(2, gap="large")
+                    with col_oc:
+                        st.markdown("**① OC 病例库初步答案**")
+                        st.write(result.get("oc_answer", ""))
+                    with col_bc:
+                        st.markdown("**② 百川医疗专家审阅意见**")
+                        st.write(result.get("baichuan_review", ""))
+                else:
+                    st.markdown("**AI 补充建议**")
+                    st.write(result["ai_text"])
+            else:
+                st.info("未检测到 API Key，已展示本地规则建议。")
+
+        with tab2:
+            col_r, col_m = st.columns([1.2, 0.8], gap="large")
+            with col_r:
                 st.caption("风险雷达（极坐标）")
                 render_radar_chart(result["radar"], primary)
+            with col_m:
                 st.metric("MME/day", result["mme_day"])
                 st.caption(result["mme_note"])
                 if result["mme_day"] >= 90:
-                    st.error("❌ 剂量红线：MME/day >= 90，需强制复核并记录调整依据。")
+                    st.error("❌ 剂量红线：MME/day >= 90，需强制复核。")
                 elif result["mme_day"] >= 50:
-                    st.warning("⚠️ 剂量警戒：MME/day >= 50，建议评估纳洛酮与高频复评。")
+                    st.warning("⚠️ 剂量警戒：MME/day >= 50。")
                 if result["renal_liver_issue"]:
-                    st.error("存在肝肾功能异常：需减量并延长给药间隔。")
+                    st.error("肝肾功能异常：需减量。")
                 if "苯二氮卓" in result["current_meds_text"]:
-                    st.error("检测到联用高风险：阿片类 + 苯二氮卓。")
+                    st.error("高风险联用：阿片类 + 苯二氮卓。")
 
-            with tab3:
+        with tab3:
+            col_c, col_l = st.columns([1, 1], gap="large")
+            with col_c:
                 st.markdown("**相似病例**")
                 for c in result["similar_cases"]:
                     st.markdown(f"- `{c.get('id', 'N/A')}` {c.get('diagnosis', '')} | {c.get('recommended_plan', '')}")
-                st.markdown("**权威链接**")
+            with col_l:
+                st.markdown("**权威参考链接**")
                 st.markdown("- [国家卫健委](https://www.nhc.gov.cn/)")
                 st.markdown("- [国家医保局](https://www.nhsa.gov.cn/)")
                 st.markdown("- [国家药监局](https://www.nmpa.gov.cn/)")
                 st.markdown("- [PubMed](https://pubmed.ncbi.nlm.nih.gov/)")
 
-            with tab4:
-                st.markdown("##### 会诊讨论区")
-                discuss_input = st.text_area(
-                    "补充会诊意见",
-                    placeholder="可输入会诊意见、沟通重点、复评触发条件等。",
-                    key="clinical_discuss_input",
+        with tab4:
+            st.markdown("##### 会诊讨论区")
+            discuss_input = st.text_area(
+                "补充会诊意见",
+                placeholder="可输入会诊意见、沟通重点、复评触发条件等。",
+                key="clinical_discuss_input",
+            )
+            if st.button("生成会诊摘要", key="clinical_discuss_btn", type="primary"):
+                consult_prompt = (
+                    f"病例摘要：{result.get('summary', '')}\n\n"
+                    f"会诊补充：{discuss_input or '无补充'}\n\n"
+                    "请输出：1) 会诊结论 2) 48-72h复评重点 3) 风险沟通要点。"
                 )
-                if st.button("生成会诊摘要", key="clinical_discuss_btn", type="primary"):
-                    consult_prompt = (
-                        f"病例摘要：{result.get('summary', '')}\n\n"
-                        f"会诊补充：{discuss_input or '无补充'}\n\n"
-                        "请输出：1) 会诊结论 2) 48-72h复评重点 3) 风险沟通要点。"
+                consult_text = ask_llm(
+                    client,
+                    model,
+                    "你是医院疼痛管理MDT秘书，请输出简洁、可落地的会诊摘要。",
+                    consult_prompt,
+                )
+                if not consult_text:
+                    consult_text = (
+                        "会诊结论：维持低剂量起始并短周期复评。\n"
+                        "复评重点：疼痛评分、呼吸抑制、镇静程度、依从性。\n"
+                        "沟通要点：明确红线风险，记录知情同意与复评时间。"
                     )
-                    consult_text = ask_llm(
-                        client,
-                        model,
-                        "你是医院疼痛管理MDT秘书，请输出简洁、可落地的会诊摘要。",
-                        consult_prompt,
-                    )
-                    if not consult_text:
-                        consult_text = (
-                            "会诊结论：维持低剂量起始并短周期复评。\n"
-                            "复评重点：疼痛评分、呼吸抑制、镇静程度、依从性。\n"
-                            "沟通要点：明确红线风险，记录知情同意与复评时间。"
-                        )
-                    st.session_state.last_report = consult_text
-                    save_last_report(st.session_state)
-                    append_audit_event(
-                        st.session_state,
-                        "clinical_report_generated",
-                        {
-                            "patient_name": result.get("patient_name", ""),
-                            "ort_level": result.get("ort_level", ""),
-                            "mme_day": result.get("mme_day", 0),
-                        },
-                    )
-                    st.success("会诊摘要已生成并保存到个人中心下载区。")
-                    st.write(consult_text)
+                st.session_state.last_report = consult_text
+                save_last_report(st.session_state)
+                append_audit_event(
+                    st.session_state,
+                    "clinical_report_generated",
+                    {
+                        "patient_name": result.get("patient_name", ""),
+                        "ort_level": result.get("ort_level", ""),
+                        "mme_day": result.get("mme_day", 0),
+                    },
+                )
+                st.success("会诊摘要已生成并保存到个人中心下载区。")
+                st.write(consult_text)

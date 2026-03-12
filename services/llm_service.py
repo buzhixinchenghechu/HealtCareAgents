@@ -83,7 +83,7 @@ def ask_llm_debate(
     )
     try:
         rsp = baichuan_client.chat.completions.create(
-            model="Baichuan-M2",
+            model="Baichuan4-Turbo",
             messages=[
                 {"role": "system", "content": "你是百川医疗大模型，具备丰富的临床医学知识，请对病例库AI的回答进行专业审阅。"},
                 {"role": "user", "content": baichuan_prompt},
