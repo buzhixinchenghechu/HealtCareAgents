@@ -16,7 +16,7 @@ from services.clinical_service import (
     risk_radar_values,
     risk_tag_class,
 )
-from services.llm_service import ask_llm
+from services.llm_service import ask_llm, ask_llm_debate, get_baichuan_client
 
 def render_radar_chart(radar: Dict[str, List[int]], primary: str) -> None:
     categories = list(radar.keys())
@@ -170,12 +170,15 @@ ORT：{ort_score}（{ort_level}）
 【用户提供的病历/长文本】
 {free_text_input.strip()}
 """
-            ai_text = ask_llm(
-                client,
-                model,
-                "你是阿片类药物临床助手，请以结构化格式输出：处方建议、备选方案、风险提示、复评计划。",
-                summary,
-            )
+            baichuan_client = get_baichuan_client()
+            system_prompt = "你是阿片类药物临床助手，请以结构化格式输出：处方建议、备选方案、风险提示、复评计划。"
+            if baichuan_client:
+                oc_answer, baichuan_review, ai_text = ask_llm_debate(
+                    client, model, baichuan_client, system_prompt, summary
+                )
+            else:
+                oc_answer, baichuan_review, ai_text = "", "", ask_llm(client, model, system_prompt, summary)
+
             st.session_state.clinical_last_result = {
                 "patient_name": patient_name or "未命名患者",
                 "age": age,
@@ -200,6 +203,8 @@ ORT：{ort_score}（{ort_level}）
                 "radar": radar,
                 "similar_cases": similar_cases,
                 "ai_text": ai_text,
+                "oc_answer": oc_answer,
+                "baichuan_review": baichuan_review,
                 "renal_liver_issue": renal_liver_issue,
                 "free_text_input": free_text_input.strip() if free_text_input else "",
             }
@@ -229,8 +234,17 @@ ORT：{ort_score}（{ort_level}）
             with tab1:
                 st.table(result["local_cards"])
                 if result["ai_text"]:
-                    st.markdown("**AI 补充建议**")
-                    st.write(result["ai_text"])
+                    if result.get("baichuan_review"):
+                        st.markdown("**🤝 OC × 百川医疗联合会诊结论**")
+                        st.write(result["ai_text"])
+                        with st.expander("查看会诊讨论过程"):
+                            st.markdown("**① OC 病例库初步答案**")
+                            st.write(result.get("oc_answer", ""))
+                            st.markdown("**② 百川医疗专家审阅意见**")
+                            st.write(result.get("baichuan_review", ""))
+                    else:
+                        st.markdown("**AI 补充建议**")
+                        st.write(result["ai_text"])
                 else:
                     st.info("未检测到 API Key，已展示本地规则建议。")
 
