@@ -33,7 +33,11 @@ def page_training(
     train_country = c3.selectbox("政策场景", option_list("training_policy_country"), key="training_policy_country")
 
     if st.button("生成训练病例", type="primary"):
-        pool = [c for c in cases if train_department[:2] in f"{c.get('category', '')}{c.get('diagnosis', '')}"]
+        # 按科室/类别筛选，成瘾治疗单独归类
+        if train_department == "成瘾治疗科":
+            pool = [c for c in cases if c.get("category") == "成瘾治疗"]
+        else:
+            pool = [c for c in cases if train_department[:2] in f"{c.get('category', '')}{c.get('diagnosis', '')}"]
         chosen = random.choice(pool or cases or [{}])
         st.session_state.training_case = {
             "id": chosen.get("id", f"SIM-{uuid.uuid4().hex[:6]}"),
@@ -75,6 +79,7 @@ def page_training(
             submit_training = st.form_submit_button("提交训练", type="primary")
 
         if submit_training:
+            # 基于关键词的基础分
             score = 60
             if len(plan_text.strip()) >= 30:
                 score += 15
@@ -111,11 +116,17 @@ def page_training(
             save_training_history(st.session_state)
             append_audit_event(st.session_state, "training_submitted", record)
 
+            # AI 反馈：带入数据库标准答案进行对比点评
+            standard_plan = case.get("recommended_plan", "")
             ai_feedback = ask_llm(
                 client,
                 model,
-                "你是临床教学带教老师，请简短点评训练方案，并给出两条改进建议。",
-                f"病例：{case}\n学员方案：{plan_text}\n评分：{score}",
+                "你是临床教学带教老师，请根据数据库标准方案对学员方案进行对比点评，指出差异，并给出两条具体改进建议。回答简明扼要。",
+                f"病例诊断：{case.get('diagnosis', '')}\n"
+                f"风险提示：{case.get('risk_notes', '')}\n"
+                f"数据库标准方案：{standard_plan}\n"
+                f"学员方案：{plan_text}\n"
+                f"评分：{score}",
             )
             if not ai_feedback:
                 ai_feedback = "训练完成。建议保持低剂量起始、固定复评节点，并强化不良反应监测记录。"

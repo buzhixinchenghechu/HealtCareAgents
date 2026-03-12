@@ -42,15 +42,43 @@ def load_static_content(static_content_path: Path) -> Dict[str, Any]:
 
 @st.cache_data
 def load_cases(base_dir: Path) -> List[Dict]:
-    path = base_dir / "data" / "cases" / "sample_cases.json"
-    if not path.exists():
-        return []
-    for encoding in ("utf-8", "gbk", "gb18030"):
+    cases: List[Dict] = []
+
+    # 1. 阿片类病例（sample_cases.json）
+    opioid_path = base_dir / "data" / "cases" / "sample_cases.json"
+    if opioid_path.exists():
+        for encoding in ("utf-8", "gbk", "gb18030"):
+            try:
+                with open(opioid_path, "r", encoding=encoding) as f:
+                    data = json.load(f)
+                if isinstance(data, list):
+                    cases.extend(data)
+                    break
+            except Exception:
+                continue
+
+    # 2. 成瘾治疗病例（addiction_cases.csv）—— 转换为统一格式
+    import csv
+    addiction_path = base_dir / "skill" / "addiction-treatment" / "data" / "addiction_cases.csv"
+    if addiction_path.exists():
         try:
-            with open(path, "r", encoding=encoding) as f:
-                data = json.load(f)
-            if isinstance(data, list):
-                return data
+            with open(addiction_path, "r", encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for i, row in enumerate(reader):
+                    cases.append({
+                        "id": f"ADD-{row.get('患者ID', i+1):0>4}",
+                        "diagnosis": f"{row.get('诊断', '').strip()}成瘾",
+                        "category": "成瘾治疗",
+                        "pain_type": "成瘾相关",
+                        "pain_score": 0,
+                        "comorbidities": "",
+                        "recommended_plan": row.get("answer", ""),
+                        "evidence": "addiction-treatment知识库",
+                        "risk_notes": f"主要药物：{row.get('药物', '')}",
+                        "outcome": "",
+                        "question": row.get("question", ""),
+                    })
         except Exception:
-            continue
-    return []
+            pass
+
+    return cases
